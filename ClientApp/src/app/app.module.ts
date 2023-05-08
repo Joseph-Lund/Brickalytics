@@ -10,6 +10,8 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedModule } from './shared/shared.module';
+import { AuthGuard } from './core/guards/auth.guard';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
+    SharedModule,
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -30,7 +33,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ]),
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [
+    AuthGuard,
+    { provide: 'LOCALSTORAGE', useValue: window.localStorage }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
