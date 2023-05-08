@@ -29,9 +29,8 @@ export class AuthenticationService {
                         isAdmin: true,
                         email: 'john.doe@gmail.com',
                         id: '12312323232',
-                        alias: 'john.doe@gmail.com'.split('@')[0],
                         expiration: moment().add(1, 'days').toDate(),
-                        fullName: 'John Doe'
+                        username: 'John Doe'
                     }));
 
                     return true;
@@ -51,9 +50,8 @@ export class AuthenticationService {
             isAdmin: true,
             email: 'john.doe@gmail.com',
             id: '12312323232',
-            alias: 'john.doe@gmail.com'.split('@')[0],
             expiration: moment().add(1, 'days').toDate(),
-            fullName: 'John Doe'
+            username: 'John Doe'
         };
     }
 
