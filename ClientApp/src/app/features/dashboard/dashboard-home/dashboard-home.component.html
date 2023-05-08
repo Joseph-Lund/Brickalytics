@@ -4,10 +4,16 @@
 
     <div class="container" fxLayout="row" fxLayoutAlign="center none">
       <div fxFlex="50%" class="text-center no-records animate">
-        <mat-icon>dashboard</mat-icon>
-        <p>This is the dashboard.</p>
+        <mat-grid-list cols="3" rowHeight="100px">
+          <mat-grid-tile
+              *ngFor="let tile of tiles"
+              [colspan]="tile.cols"
+              [rowspan]="tile.rows"
+              [style.background]="tile.color">
+            {{tile.text}}
+          </mat-grid-tile>
+        </mat-grid-list>
       </div>
-      <mat-icon> </mat-icon>
     </div>
   </div>
 </div>

@@ -27,10 +27,10 @@ export class AuthenticationService {
                     this.localStorage.setItem('currentUser', JSON.stringify({
                         token: 'aisdnaksjdn,axmnczm',
                         isAdmin: true,
-                        email: 'john.doe@gmail.com',
+                        email: 'bricky@orchideight.com',
                         id: '12312323232',
                         expiration: moment().add(1, 'days').toDate(),
-                        username: 'John Doe'
+                        username: 'Bricky'
                     }));
 
                     return true;
@@ -48,10 +48,10 @@ export class AuthenticationService {
         return {
             token: 'aisdnaksjdn,axmnczm',
             isAdmin: true,
-            email: 'john.doe@gmail.com',
+            email: 'bricky@orchideight.com',
             id: '12312323232',
             expiration: moment().add(1, 'days').toDate(),
-            username: 'John Doe'
+            username: 'Bricky'
         };
     }
 

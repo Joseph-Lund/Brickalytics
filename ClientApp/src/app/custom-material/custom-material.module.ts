@@ -18,7 +18,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
-import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -51,7 +50,7 @@ export const MY_FORMATS = {
   imports: [
     CommonModule,
     MatMomentDateModule,
-    MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
+    MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule, MatGridListModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
     MatSnackBarModule, MatProgressSpinnerModule, MatDatepickerModule,
     MatAutocompleteModule, MatTableModule, MatDialogModule, MatTabsModule,
@@ -61,7 +60,7 @@ export const MY_FORMATS = {
   ],
   exports: [
     CommonModule,
-    MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
+    MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule, MatGridListModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
     MatSnackBarModule, MatMenuModule, MatProgressSpinnerModule, MatDatepickerModule,
     MatAutocompleteModule, MatTableModule, MatDialogModule, MatTabsModule,
