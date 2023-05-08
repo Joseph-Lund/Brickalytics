@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy, AfterViewInit } from '
 import { MediaMatcher } from '@angular/cdk/layout';
 import { timer } from 'rxjs';
 import { Subscription } from 'rxjs';
-
+import {MatSidenavModule} from '@angular/material/sidenav'
 import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { SpinnerService } from 'src/app/core/services/spinner.service';
 import { AuthGuard } from 'src/app/core/guards/auth.guard';
