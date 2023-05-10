@@ -11,18 +11,18 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
-bin/
-Bin/
-obj/
-Obj/
+API/[Dd]ebug/
+API/[Dd]ebugPublic/
+API/[Rr]elease/
+API/[Rr]eleases/
+API/x64/
+API/x86/
+API/build/
+API/bld/
+API/bin/
+API/Bin/
+API/obj/
+API/Obj/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -180,7 +180,7 @@ ClientBin/
 orleans.codegen.cs
 
 /node_modules
-ClientApp/.angular/cache
+UI/.angular/cache
 
 # RIA/Silverlight projects
 Generated_Code/

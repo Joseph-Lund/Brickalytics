@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Brickalytics.csproj",
+                "${workspaceFolder}\\API\\BrickalyticsAPI.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Brickalytics.csproj",
+                "${workspaceFolder}\\API\\BrickalyticsAPI.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,9 +33,33 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Brickalytics.csproj"
+                "${workspaceFolder}\\API\\BrickalyticsAPI.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "serve",
+            "type": "npm",
+            "script": "start",
+            "isBackground": true,
+            "options": {
+                "cwd": "${workspaceFolder}/UI"
+            },
+            "problemMatcher": [
+                {
+                    "pattern":{
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    },
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": "."
+                    }
+                }
+            ]
         }
     ]
 }
