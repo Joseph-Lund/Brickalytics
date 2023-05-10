@@ -54,20 +54,17 @@ namespace Brickalytics.Controllers
 
         }
         [HttpPost]
-        [Route("logout/{id}")]
-        public async Task Logout(int id)
+        [Route("logout")]
+        public async Task Logout(Tokens tokens)
         {
-            try
+            var accessTokenUserId = ValidateToken(tokens.AccessToken!);
+            var refreshTokenUserId = ValidateToken(tokens.RefreshToken!);
+            if (accessTokenUserId != null && refreshTokenUserId != null)
             {
-                var user = await _userService.GetUserByIdAsync(id);
-
-                user.RefreshToken = null;
+                var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
+                                user.RefreshToken = null;
                 user.RefreshTokenExpiration = null;
                 await _userService.UpdateUserRefreshTokenAsync(user);
-            }
-            catch
-            {
-                throw;
             }
         }
         [HttpPost("refresh")]
