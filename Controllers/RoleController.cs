@@ -6,7 +6,7 @@ namespace Brickalytics.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("Role")]
     public class RoleController : ControllerBase
     {
         private readonly ILogger<RoleController> _logger;

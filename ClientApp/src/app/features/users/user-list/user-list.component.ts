@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { NotificationService } from 'src/app/core/services/notification.service';
+import { HttpService } from 'src/app/core/services/http.service';
 
 @Component({
   selector: 'app-user-list',
@@ -10,11 +10,17 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 export class UserListComponent implements OnInit {
 
   constructor(
-    private notificationService: NotificationService,
-    private titleService: Title
+    private httpService: HttpService,
+    private titleService: Title,
   ) { }
 
   ngOnInit() {
     this.titleService.setTitle('Brickalytics - Users');
   }
+
+  getUsersList(){
+
+  }
+
+
 }
