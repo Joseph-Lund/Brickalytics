@@ -20,7 +20,7 @@ namespace Brickalytics.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Role>> GetUsers()
+        public async Task<List<Role>> GetRoles()
         {
             var result = await _roleService.GetRolesAsync();
             return result;

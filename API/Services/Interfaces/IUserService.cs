@@ -11,5 +11,7 @@ namespace Brickalytics.Services
         Task UpdateUserAsync(User user);
         Task UpdateUserPasswordAsync(User user);
         Task UpdateUserRefreshTokenAsync(User user);
+        Task AddUpdateUserRateAsync(UserRate userRate);
+        Task DeleteUserRateAsync(UserRate userRate);
     }    
 }    

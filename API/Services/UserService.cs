@@ -81,6 +81,26 @@ namespace Brickalytics.Services
 
             await Task.FromResult(_dapper.Update<User>("UpdateUserRefreshToken", parameters));
         }
+        public async Task AddUpdateUserRateAsync(UserRate userRate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("UserId", userRate.UserId);
+            parameters.Add("ProductTypeId", userRate.ProductTypeId);
+            parameters.Add("ProductSubTypeId", userRate.ProductSubTypeId);
+            parameters.Add("Rate", userRate.Rate);
+            parameters.Add("Percent", userRate.Percent);
+
+            await Task.FromResult(_dapper.Update<User>("AddUpdateUserRate", parameters));
+        }
+        public async Task DeleteUserRateAsync(UserRate userRate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("UserId", userRate.UserId);
+            parameters.Add("ProductTypeId", userRate.ProductTypeId);
+            parameters.Add("ProductSubTypeId", userRate.ProductSubTypeId);
+
+            await Task.FromResult(_dapper.Delete<UserRate>("DeleteUserRate", parameters));
+        }
         
         public void Dispose()
         {

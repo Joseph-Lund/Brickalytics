@@ -65,5 +65,17 @@ namespace Brickalytics.Controllers
             
             await _userService.UpdateUserPasswordAsync(user);
         }
+        [HttpPut]
+        [Route("Rate")]
+        public async Task AddUpdateUserRate(UserRate userRate)
+        {
+            await _userService.AddUpdateUserRateAsync(userRate);
+        }
+        [HttpDelete]
+        [Route("Rate")]
+        public async Task DeleteUserRate(UserRate userRate)
+        {
+            await _userService.DeleteUserRateAsync(userRate);
+        }
     }
 }

@@ -109,5 +109,40 @@ namespace Brickalytics.Services
 
             return result!;
         }
+        public T Delete<T>(string sp, DynamicParameters parms, CommandType commandType = CommandType.StoredProcedure)
+        {
+            T? result;
+            using IDbConnection db = new SqlConnection(_config.GetConnectionString(Connectionstring));
+            try
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                using var tran = db.BeginTransaction();
+                try
+                {
+                    result = db.Query<T>(sp, parms, commandType: commandType, transaction: tran).FirstOrDefault();
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(default(EventId), ex, "Error Deleting for sp:" + sp);
+                    tran.Rollback();
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(default(EventId), ex, "Error Connecting to database for sp:" + sp);
+                throw;
+            }
+            finally
+            {
+                if (db.State == ConnectionState.Open)
+                    db.Close();
+            }
+
+            return result!;
+        }
     }
 }
