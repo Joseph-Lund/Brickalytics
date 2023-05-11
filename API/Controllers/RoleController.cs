@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Brickalytics.Services;
+using Brickalytics.Models;
 
 namespace Brickalytics.Controllers
 {
@@ -18,7 +19,7 @@ namespace Brickalytics.Controllers
             _roleService = roleService;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<List<Role>> GetUsers()
         {
             var result = await _roleService.GetRolesAsync();

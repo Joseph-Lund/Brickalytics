@@ -1,3 +1,5 @@
+using Brickalytics.Models;
+
 namespace Brickalytics.Services
 {    
     public interface IUserService : IDisposable    

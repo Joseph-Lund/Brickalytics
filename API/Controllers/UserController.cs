@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Brickalytics.Services;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Brickalytics.Models;
 
 namespace Brickalytics.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -20,30 +21,32 @@ namespace Brickalytics.Controllers
             _userService = userService;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<List<User>> GetUsers()
         {
             var result = await _userService.GetUsersAsync();
             return result;
         }
-        [HttpGet("{id:int}")]
+        [HttpGet]
+        [Route("{id:int}")]
         public async Task<User> GetUserById(int id)
         {
             var result = await _userService.GetUserByIdAsync(id);
             return result;
         }
-        [HttpPost()]
+        [HttpPost]
         public async Task<int> AddUser(User user)
         {
             var result = await _userService.AddUserAsync(user);
             return result;
         }
-        [HttpPut()]
+        [HttpPut]
         public async Task UpdateUser(User user)
         {
             await _userService.UpdateUserAsync(user);
         }
-        [HttpPut("password")]
+        [HttpPut]
+        [Route("Password")]
         public async Task UpdateUserPassword(ChangePasswordInfo passwordInfo)
         {
 
@@ -58,7 +61,7 @@ namespace Brickalytics.Controllers
                 numBytesRequested: 256 / 8));
 
             user.Hash = hash;
-            user.Salt = salt.ToString();
+            user.Salt = Convert.ToBase64String(salt);
             
             await _userService.UpdateUserPasswordAsync(user);
         }

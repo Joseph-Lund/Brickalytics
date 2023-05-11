@@ -1,6 +1,6 @@
 namespace Brickalytics.Models
 {
-    public class User
+    public class ProductType
     {
         public int Id {get; set;}
         public string? CreatorName { get; set; }

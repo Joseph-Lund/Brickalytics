@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Brickalytics.Services;
 using Dapper;
 using System.Data;
+using Brickalytics.Models;
 
-namespace Brickalytics.Controllers
+namespace Brickalytics.Services
 {
-    public class UserService : ControllerBase
+    public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
         private readonly IDapperService _dapper;
@@ -43,7 +42,6 @@ namespace Brickalytics.Controllers
             parameters.Add("Id", DbType.Int32, direction:ParameterDirection.Output);
             parameters.Add("CreatorName", user.CreatorName);
             parameters.Add("Email", user.Email);
-            parameters.Add("Rate", user.Rate);
             parameters.Add("Active", user.Active);
             parameters.Add("Hash", user.Hash);
             parameters.Add("Salt", user.Salt);
@@ -60,7 +58,6 @@ namespace Brickalytics.Controllers
             parameters.Add("Id", user.Id);
             parameters.Add("CreatorName", user.CreatorName);
             parameters.Add("Email", user.Email);
-            parameters.Add("Rate", user.Rate);
             parameters.Add("Active", user.Active);
             parameters.Add("RoleId", user.RoleId);
 
@@ -83,6 +80,11 @@ namespace Brickalytics.Controllers
             parameters.Add("RefreshTokenExpiration", user.RefreshTokenExpiration);
 
             await Task.FromResult(_dapper.Update<User>("UpdateUserRefreshToken", parameters));
+        }
+        
+        public void Dispose()
+        {
+
         }
     }
 }

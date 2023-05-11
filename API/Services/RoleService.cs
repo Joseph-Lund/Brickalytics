@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Brickalytics.Services;
+using Brickalytics.Models;
 
-namespace Brickalytics.Controllers
+namespace Brickalytics.Services
 {
-    public class RoleService : ControllerBase
+    public class RoleService : IRoleService
     {
         private readonly ILogger<RoleService> _logger;
         private readonly IDapperService _dapper;
@@ -17,6 +16,11 @@ namespace Brickalytics.Controllers
         {
             var result = await Task.FromResult(_dapper.GetAll<Role>("GetRoles"));
             return result;
+        }
+        
+        public void Dispose()
+        {
+
         }
     }
 }

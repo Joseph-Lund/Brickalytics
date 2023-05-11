@@ -1,4 +1,4 @@
-namespace Brickalytics
+namespace Brickalytics.Models
 {
     public class LoginInfo
     {

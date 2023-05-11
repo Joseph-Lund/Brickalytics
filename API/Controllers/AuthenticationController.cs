@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Brickalytics.Models;
 using Brickalytics.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
@@ -9,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Brickalytics.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [Route("[controller]")]
     public class AuthenticationController : ControllerBase
@@ -25,15 +27,16 @@ namespace Brickalytics.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
+        [Route("Login")]
         public async Task<Tokens?> Login(LoginInfo loginInfo)
         {
             try
             {
                 var user = await _userService.GetUserByCreatorNameAsync(loginInfo.CreatorName!);
                 if (user == null)
-                    return null;
-
+                {
+                    throw new Exception();
+                }
                 if (VerifyPassword(loginInfo.Password!, user.Hash!, user.Salt!))
                 {
                     var tokens = GenerateTokens(user.Id);
@@ -44,17 +47,17 @@ namespace Brickalytics.Controllers
                 }
                 else
                 {
-                    return null;
+                    throw new Exception();
                 }
             }
             catch
             {
-                throw;
+                throw new Exception("Invalid username or password");
             }
 
         }
-        [HttpPost]
-        [Route("logout")]
+        [HttpPut]
+        [Route("Logout")]
         public async Task Logout(Tokens tokens)
         {
             var accessTokenUserId = ValidateToken(tokens.AccessToken!);
@@ -62,12 +65,13 @@ namespace Brickalytics.Controllers
             if (accessTokenUserId != null && refreshTokenUserId != null)
             {
                 var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
-                                user.RefreshToken = null;
+                user.RefreshToken = null;
                 user.RefreshTokenExpiration = null;
                 await _userService.UpdateUserRefreshTokenAsync(user);
             }
         }
-        [HttpPost("refresh")]
+        [HttpPost]
+        [Route("Refresh")]
         public async Task<Tokens?> Refresh(Tokens tokens)
         {
             var accessTokenUserId = ValidateToken(tokens.AccessToken!);
@@ -142,10 +146,11 @@ namespace Brickalytics.Controllers
 
             string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: userEnteredPassword,
-                salt: System.Convert.FromBase64String(dbPasswordSalt),
+                salt: Convert.FromBase64String(dbPasswordSalt),
                 prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 10000,
+                iterationCount: 100000,
                 numBytesRequested: 256 / 8));
+
 
             return dbPasswordHash == hashedPassword;
         }
