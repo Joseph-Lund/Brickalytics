@@ -28,7 +28,7 @@ namespace Brickalytics.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<Tokens?> Login(LoginInfo loginInfo)
+        public async Task<LoginResponse?> Login(LoginInfo loginInfo)
         {
             try
             {
@@ -43,7 +43,15 @@ namespace Brickalytics.Controllers
                     user.RefreshToken = tokens.RefreshToken;
                     user.RefreshTokenExpiration = tokens.RefreshTokenExpiration;
                     await _userService.UpdateUserRefreshTokenAsync(user);
-                    return tokens;
+
+                    return new LoginResponse(){
+                        Id = user.Id,
+                        CreatorName = user.CreatorName,
+                        Email = user.Email,
+                        AccessToken = tokens.AccessToken,
+                        RefreshToken = tokens.RefreshToken,
+                        RefreshTokenExpiration = tokens.RefreshTokenExpiration
+                    };
                 }
                 else
                 {
