@@ -4,5 +4,9 @@ namespace Brickalytics.Models
     {
         public long ProductId {get; set;}
         public int Count { get; set; }
+        public string? Name { get; set; }
+        public decimal Price { get; set; }
+        public int ProductTypeId { get; set; }
+        
     }
 }

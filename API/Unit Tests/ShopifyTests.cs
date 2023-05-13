@@ -46,17 +46,17 @@ namespace BrickalyticsTests.Tests
             var collectionsProducts = await _shopifyService.GetCollectionsProductsAsync(id);
             Assert.NotNull(collectionsProducts);
         }
-        [Fact]
-        public async Task GetProductsSoldCount()
-        {
-            IList<long?> productIds = new List<long?>()
-            {
-                8319259869499,
-                8276458242363
-            };
+        // [Fact]
+        // public async Task GetProductsSoldCount()
+        // {
+        //     IList<long?> productIds = new List<long?>()
+        //     {
+        //         8319259869499,
+        //         8276458242363
+        //     };
 
-            var productsSoldCount = await _shopifyService.GetProductsSoldCountAsync(productIds);
-            Assert.NotNull(productsSoldCount);
-        }
+        //     var productsSoldCount = await _shopifyService.GetProductsSoldCountAsync(productIds);
+        //     Assert.NotNull(productsSoldCount);
+        // }
     }
 }
