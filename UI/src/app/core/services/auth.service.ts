@@ -5,7 +5,7 @@ import * as moment from 'moment';
 
 import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
-import { User } from '../models/user';
+import { CurrentUser } from '../models/currentUser';
 import { Token } from '../models/token';
 import { LoginInfo } from '../models/loginInfo';
 import { LoginResponse } from '../models/loginResponse';
@@ -16,6 +16,8 @@ import { LoginResponse } from '../models/loginResponse';
 export class AuthenticationService {
 
   private currentUser: any;
+  private readonly apiUrl = environment.apiUrl + '/Authentication';
+
   constructor(private http: HttpClient,
     @Inject('LOCALSTORAGE') private localStorage: Storage) {
     var currentUserJson = this.localStorage.getItem('currentUser');
@@ -25,18 +27,18 @@ export class AuthenticationService {
   }
 
   login(creatorName: string, password: string) {
-    var loginUrl = environment.apiUrl + '/Authentication/Login';
+    var loginUrl = this.apiUrl + '/Login';
     var loginModel = new LoginInfo(creatorName, password);
 
     this.http.post<LoginResponse>(loginUrl, loginModel).subscribe(response => {
-      this.setCurrentUser(new User(response.id, response.creatorName, response.email, response.accessToken, response.refreshToken, response.refreshTokenExpiration))
+      this.setCurrentUser(new CurrentUser(response.id, response.creatorName, response.email, response.accessToken, response.refreshToken, response.refreshTokenExpiration))
     });
   }
 
   logout(): void {
     var user = this.currentUser;
 
-    var logoutUrl = environment.apiUrl + '/Authentication/Logout';
+    var logoutUrl = this.apiUrl + '/Logout';
     var logoutModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
 
     this.http.put<Token>(logoutUrl, logoutModel).subscribe(token => {
@@ -46,11 +48,11 @@ export class AuthenticationService {
     });
   }
 
-  getCurrentUser(): User {
+  getCurrentUser(): CurrentUser {
     return this.currentUser;
   }
 
-  setCurrentUser(user: User): void {
+  setCurrentUser(user: CurrentUser): void {
     this.currentUser = user;
     this.localStorage.setItem('currentUser', JSON.stringify(user));
   }
@@ -58,7 +60,7 @@ export class AuthenticationService {
   refreshToken(): Observable<Token> {
     var user = this.currentUser;
 
-    var refreshUrl = environment.apiUrl + '/Authentication/Refresh';
+    var refreshUrl = this.apiUrl + 'Refresh';
     var refreshModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
 
     return this.http.post<Token>(refreshUrl, refreshModel).pipe(
@@ -72,17 +74,5 @@ export class AuthenticationService {
         return token;
       })
     );
-  }
-
-  passwordResetRequest(email: string) {
-    return of(true).pipe(delay(1000));
-  }
-
-  changePassword(email: string, currentPwd: string, newPwd: string) {
-    return of(true).pipe(delay(1000));
-  }
-
-  passwordReset(email: string, token: string, password: string, confirmPassword: string): any {
-    return of(true).pipe(delay(1000));
   }
 }
