@@ -37,8 +37,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnInit(): void {
         const user = this.authService.getCurrentUser();
 
-        this.isAdmin = user.isAdmin;
-        this.userName = user.username;
+        this.userName = user.creatorName;
 
         // Auto log-out subscription
         const timer$ = timer(2000, 5000);

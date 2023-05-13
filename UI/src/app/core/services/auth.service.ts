@@ -1,14 +1,14 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { delay, map } from 'rxjs/operators';
-import * as moment from 'moment';
+import { map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CurrentUser } from '../models/currentUser';
 import { Token } from '../models/token';
 import { LoginInfo } from '../models/loginInfo';
 import { LoginResponse } from '../models/loginResponse';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,8 @@ export class AuthenticationService {
   private currentUser: any;
   private readonly apiUrl = environment.apiUrl + '/Authentication';
 
-  constructor(private http: HttpClient,
+  constructor(private router: Router,
+    private http: HttpClient,
     @Inject('LOCALSTORAGE') private localStorage: Storage) {
     var currentUserJson = this.localStorage.getItem('currentUser');
     if (currentUserJson !== null) {
@@ -30,8 +31,9 @@ export class AuthenticationService {
     var loginUrl = this.apiUrl + '/Login';
     var loginModel = new LoginInfo(creatorName, password);
 
-    this.http.post<LoginResponse>(loginUrl, loginModel).subscribe(response => {
-      this.setCurrentUser(new CurrentUser(response.id, response.creatorName, response.email, response.accessToken, response.refreshToken, response.refreshTokenExpiration))
+    return this.http.post<LoginResponse>(loginUrl, loginModel).subscribe(response => {
+      this.setCurrentUser(new CurrentUser(response.id, response.creatorName, response.email, response.accessToken, response.refreshToken, response.refreshTokenExpiration));
+      this.router.navigate(['/dashboard']);
     });
   }
 

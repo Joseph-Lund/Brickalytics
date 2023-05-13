@@ -4,6 +4,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { SpinnerService } from 'src/app/core/services/spinner.service';
 import { User } from 'src/app/core/models/user';
 import { UserService } from 'src/app/core/services/user.service';
+import { AuthenticationService } from 'src/app/core/services/auth.service';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class ChangePasswordComponent implements OnInit {
   disableSubmit!: boolean;
 
   constructor(private userService: UserService,
+    private authService: AuthenticationService,
     private spinnerService: SpinnerService,
     private notificationService: NotificationService) {
     this.hideCurrentPassword = true;
@@ -49,7 +51,7 @@ export class ChangePasswordComponent implements OnInit {
   }
 
 
-  updatePassword(user: User, password: string){
-    this.userService.updateUserPassword(user.id, password).subscribe(u =>{ });
+  updatePassword(){
+    this.userService.updateUserPassword(this.authService.getCurrentUser().id, this.newPassword).subscribe(u =>{ });
   }
 }
