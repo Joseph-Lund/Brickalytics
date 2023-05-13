@@ -52,7 +52,7 @@ namespace Brickalytics.Controllers
             }
             catch
             {
-                throw new Exception("Invalid username or password");
+                throw new UnauthorizedAccessException("Invalid username or password");
             }
 
         }
@@ -95,7 +95,7 @@ namespace Brickalytics.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", id.ToString()) }),
-                Expires = DateTime.UtcNow.AddMinutes(10),
+                Expires = DateTime.UtcNow.AddMinutes(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

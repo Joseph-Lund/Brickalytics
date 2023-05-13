@@ -7,7 +7,7 @@ using Brickalytics.Models;
 
 namespace Brickalytics.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase

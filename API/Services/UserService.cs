@@ -57,6 +57,7 @@ namespace Brickalytics.Services
             var parameters = new DynamicParameters();
             parameters.Add("Id", user.Id);
             parameters.Add("CreatorName", user.CreatorName);
+            parameters.Add("CollectionId", user.CollectionId);
             parameters.Add("Email", user.Email);
             parameters.Add("Active", user.Active);
             parameters.Add("RoleId", user.RoleId);
