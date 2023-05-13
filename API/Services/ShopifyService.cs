@@ -24,13 +24,13 @@ namespace Brickalytics.Services
             IEnumerable<ShopifySharp.Product> products = (await productService.ListAsync()).Items;
             return products;
         }
-        public async Task<IEnumerable<ShopifySharp.CollectionListing>> GetCollectionsListingsAsync()
+        public async Task<IEnumerable<ShopifySharp.CustomCollection>> GetCollectionsAsync()
         {
             try
             {
-            var collectionListingService = CreateService<ShopifySharp.CollectionListingService>();
-            IEnumerable<ShopifySharp.CollectionListing> collectionListings = (await collectionListingService.ListAsync()).Items;
-            return collectionListings;
+            var customCollectionService = CreateService<ShopifySharp.CustomCollectionService>();
+            IEnumerable<ShopifySharp.CustomCollection> collections = (await customCollectionService.ListAsync()).Items;
+            return collections;
             }
             catch(Exception ex){
                 Console.Write(ex);
@@ -43,9 +43,10 @@ namespace Brickalytics.Services
             IEnumerable<ShopifySharp.Product> collectionProducts = (await collectionService.ListProductsAsync(collectionId)).Items;
             return collectionProducts;
         }
-        public async Task<IEnumerable<Order>> GetProductsSoldCountAsync(IList<long?> productIds, DateTimeOffset startDate = new DateTimeOffset(), DateTimeOffset? endDate = null)
+        public async Task<IEnumerable<Order>> GetProductsSoldCountAsync(IList<long?> productIds, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
         {
-            var ordersInfo = Enumerable.Empty<Order>();
+            var ordersInfo = new List<Order>();
+            
             var filter = CreateFilter(startDate, endDate);
 
             var orderService = CreateService<ShopifySharp.OrderService>();
@@ -56,7 +57,7 @@ namespace Brickalytics.Services
 
             foreach (var product in ordersCount)
             {
-                ordersInfo.Append(new Order()
+                ordersInfo.Add(new Order()
                 {
                     ProductId = product.Key,
                     Count = product.Value
@@ -77,8 +78,8 @@ namespace Brickalytics.Services
                     return (T)(object)new ShopifySharp.OrderService(url, accessToken);
                 case Type t when t == typeof(ShopifySharp.ProductService):
                     return (T)(object)new ShopifySharp.ProductService(url, accessToken);
-                case Type t when t == typeof(ShopifySharp.CollectionListingService):
-                    return (T)(object)new ShopifySharp.CollectionListingService(url, accessToken);
+                case Type t when t == typeof(ShopifySharp.CustomCollectionService):
+                    return (T)(object)new ShopifySharp.CustomCollectionService(url, accessToken);
                 case Type t when t == typeof(ShopifySharp.CollectionService):
                     return (T)(object)new ShopifySharp.CollectionService(url, accessToken);
                 default:
@@ -99,7 +100,7 @@ namespace Brickalytics.Services
                     {
                         long productId = (long)lineItem.ProductId!;
 
-                        if (!ordersCount.ContainsKey(productId))
+                        if (ordersCount.ContainsKey(productId))
                         {
                             ordersCount[productId]++;
                         }
@@ -113,11 +114,16 @@ namespace Brickalytics.Services
 
             return ordersCount;
         }
-        private ShopifySharp.Filters.OrderListFilter CreateFilter(DateTimeOffset startDate, DateTimeOffset? endDate)
+        private ShopifySharp.Filters.OrderListFilter CreateFilter(DateTimeOffset? startDate, DateTimeOffset? endDate)
         {
+
+            if (startDate == null)
+            {
+                startDate = DateTimeOffset.Now;
+            }
             if (endDate == null)
             {
-                endDate = startDate.AddDays(-7);
+                endDate = DateTimeOffset.Now.AddDays(-7);
             }
 
             var filter = new ShopifySharp.Filters.OrderListFilter()

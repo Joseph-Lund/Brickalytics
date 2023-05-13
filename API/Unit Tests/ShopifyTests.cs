@@ -34,15 +34,15 @@ namespace BrickalyticsTests.Tests
             Assert.NotNull(products);
         }
         [Fact]
-        public async Task GetCollectionsListings()
+        public async Task GetCollections()
         {
-            var collectionsListings = await _shopifyService.GetCollectionsListingsAsync();
-            Assert.NotNull(collectionsListings);
+            var collections = await _shopifyService.GetCollectionsAsync();
+            Assert.NotNull(collections);
         }
         [Fact]
         public async Task GetCollectionsProductsAsync()
         {
-            long id = 1;
+            long id = 266502930541;
             var collectionsProducts = await _shopifyService.GetCollectionsProductsAsync(id);
             Assert.NotNull(collectionsProducts);
         }
@@ -51,7 +51,8 @@ namespace BrickalyticsTests.Tests
         {
             IList<long?> productIds = new List<long?>()
             {
-                1
+                8319259869499,
+                8276458242363
             };
 
             var productsSoldCount = await _shopifyService.GetProductsSoldCountAsync(productIds);
