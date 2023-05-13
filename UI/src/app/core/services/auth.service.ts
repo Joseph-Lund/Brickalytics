@@ -4,7 +4,7 @@ import { delay, map } from 'rxjs/operators';
 import * as moment from 'moment';
 
 import { environment } from '../../../environments/environment';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { User } from '../models/user';
 import { Token } from '../models/token';
 import { LoginInfo } from '../models/loginInfo';
@@ -55,21 +55,23 @@ export class AuthenticationService {
     this.localStorage.setItem('currentUser', JSON.stringify(user));
   }
 
-  refreshToken(): User {
+  refreshToken(): Observable<Token> {
     var user = this.currentUser;
 
     var refreshUrl = environment.apiUrl + '/Authentication/Refresh';
     var refreshModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
 
-    this.http.post<Token>(refreshUrl, refreshModel).subscribe(token => {
-      user.accessToken = token.accessToken;
-      user.refreshToken = token.refreshToken;
-      user.refreshTokenExpiration = token.refreshTokenExpiration;
-    });
+    return this.http.post<Token>(refreshUrl, refreshModel).pipe(
+      map(token => {
+        user.accessToken = token.accessToken;
+        user.refreshToken = token.refreshToken;
+        user.refreshTokenExpiration = token.refreshTokenExpiration;
 
-    this.setCurrentUser(user);
+        this.setCurrentUser(user);
 
-    return user;
+        return token;
+      })
+    );
   }
 
   passwordResetRequest(email: string) {

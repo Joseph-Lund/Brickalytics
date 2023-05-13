@@ -8,6 +8,7 @@ import { HttpEvent } from '@angular/common/http';
 import { catchError, filter, finalize, switchMap, take } from 'rxjs/operators';
 import { AuthenticationService } from '../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Token } from '../models/token';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -51,13 +52,12 @@ export class AuthInterceptor implements HttpInterceptor {
       if (!this.isRefreshing) {
         this.isRefreshing = true;
         this.refreshTokenSubject.next(null);
-
+        this.authService
         return this.authService.refreshToken().pipe(
-          switchMap((response: any) => {
-            if (response && response.token) {
-              this.authService.setCurrentUser(response);
-              this.refreshTokenSubject.next(response.token);
-              return next.handle(this.addToken(request, response.token));
+          switchMap((response: Token) => {
+            if (response && response.accessToken) {
+              this.refreshTokenSubject.next(response.accessToken);
+              return next.handle(this.addToken(request, response.accessToken));
             }
             return this.redirectToLogin();
           }),
