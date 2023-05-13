@@ -14,7 +14,7 @@ export class RoleService {
   private readonly apiUrl = environment.apiUrl + '/Role';
   constructor(private http: HttpClient) { }
 
-  getProductTypes(): Observable<GenericType[]> {
+  getRoles(): Observable<GenericType[]> {
     return this.http.get<GenericType[]>(this.apiUrl);
   }
 }

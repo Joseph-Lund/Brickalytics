@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NotificationService } from 'src/app/core/services/notification.service';
 import { Title } from '@angular/platform-browser';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
+import { UserService } from 'src/app/core/services/user.service';
+import { CurrentUser } from 'src/app/core/models/currentUser';
 
 export interface Tile {
   color: string;
@@ -16,23 +17,29 @@ export interface Tile {
 })
 
 export class DashboardHomeComponent implements OnInit {
-  currentUser: any;
+  currentUser: CurrentUser | null = null;
+
+
+
 
   tiles: Tile[] = [
-    {text: 'Traffic', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'Products Sold', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'Date Picker', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Details [prin', cols: 3, rows: 1, color: '#DDBDF1'},
+    { text: 'Traffic', cols: 1, rows: 1, color: 'lightblue' },
+    { text: 'Products Sold', cols: 1, rows: 1, color: 'lightblue' },
+    { text: 'Date Picker', cols: 1, rows: 1, color: 'lightgreen' },
+    { text: 'Details [prin', cols: 3, rows: 1, color: '#DDBDF1' },
   ];
 
-  constructor(private notificationService: NotificationService,
+  constructor(private userService: UserService,
     private authService: AuthenticationService,
     private titleService: Title) {
   }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    this.titleService.setTitle('Brickalytics - Dashboard')
-
+    this.titleService.setTitle('Brickalytics - Dashboard');
+    this.getUserById(this.currentUser.id);
+  }
+  getUserById(id: number) {
+    this.userService.getUserById(id).subscribe();
   }
 }

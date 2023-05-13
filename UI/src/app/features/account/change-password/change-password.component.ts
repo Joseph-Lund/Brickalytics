@@ -1,8 +1,9 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { SpinnerService } from 'src/app/core/services/spinner.service';
+import { User } from 'src/app/core/models/user';
+import { UserService } from 'src/app/core/services/user.service';
 
 
 @Component({
@@ -19,10 +20,9 @@ export class ChangePasswordComponent implements OnInit {
   newPasswordConfirm!: string;
   disableSubmit!: boolean;
 
-  constructor(private authService: AuthenticationService,
+  constructor(private userService: UserService,
     private spinnerService: SpinnerService,
     private notificationService: NotificationService) {
-
     this.hideCurrentPassword = true;
     this.hideNewPassword = true;
   }
@@ -48,24 +48,8 @@ export class ChangePasswordComponent implements OnInit {
     });
   }
 
-  changePassword() {
 
-    if (this.newPassword !== this.newPasswordConfirm) {
-      this.notificationService.openSnackBar('New passwords do not match.');
-      return;
-    }
-
-    const email = this.authService.getCurrentUser().email;
-
-    this.authService.changePassword(email, this.currentPassword, this.newPassword)
-      .subscribe(
-        data => {
-          this.form.reset();
-          this.notificationService.openSnackBar('Your password has been changed.');
-        },
-        error => {
-          this.notificationService.openSnackBar(error.error);
-        }
-      );
+  updatePassword(user: User, password: string){
+    this.userService.updateUserPassword(user.id, password).subscribe(u =>{ });
   }
 }
