@@ -4,65 +4,83 @@ import { delay, map } from 'rxjs/operators';
 import * as moment from 'moment';
 
 import { environment } from '../../../environments/environment';
-import { of, EMPTY } from 'rxjs';
+import { of } from 'rxjs';
+import { User } from '../models/user';
+import { Token } from '../models/token';
+import { LoginInfo } from '../models/loginInfo';
+import { LoginResponse } from '../models/loginResponse';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthenticationService {
 
-    constructor(private http: HttpClient,
-        @Inject('LOCALSTORAGE') private localStorage: Storage) {
+  private currentUser: any;
+  constructor(private http: HttpClient,
+    @Inject('LOCALSTORAGE') private localStorage: Storage) {
+    var currentUserJson = this.localStorage.getItem('currentUser');
+    if (currentUserJson !== null) {
+      this.currentUser = JSON.parse(this.localStorage.getItem('currentUser')!);
     }
+  }
 
-    login(email: string, password: string) {
-        return of(true)
-            .pipe(delay(1000),
-                map((/*response*/) => {
-                    // set token property
-                    // const decodedToken = jwt_decode(response['token']);
+  login(creatorName: string, password: string) {
+    var loginUrl = environment.apiUrl + '/Authentication/Login';
+    var loginModel = new LoginInfo(creatorName, password);
 
-                    // store email and jwt token in local storage to keep user logged in between page refreshes
-                    this.localStorage.setItem('currentUser', JSON.stringify({
-                        token: 'aisdnaksjdn,axmnczm',
-                        isAdmin: true,
-                        email: 'bricky@orchideight.com',
-                        id: '12312323232',
-                        expiration: moment().add(1, 'days').toDate(),
-                        username: 'Bricky'
-                    }));
+    this.http.post<LoginResponse>(loginUrl, loginModel).subscribe(response => {
+      this.setCurrentUser(new User(response.id, response.creatorName, response.email, response.accessToken, response.refreshToken, response.refreshTokenExpiration))
+    });
+  }
 
-                    return true;
-                }));
-    }
+  logout(): void {
+    var user = this.currentUser;
 
-    logout(): void {
-        // clear token remove user from local storage to log user out
-        this.localStorage.removeItem('currentUser');
-    }
+    var logoutUrl = environment.apiUrl + '/Authentication/Logout';
+    var logoutModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
 
-    getCurrentUser(): any {
-        // TODO: Enable after implementation
-        // return JSON.parse(this.localStorage.getItem('currentUser'));
-        return {
-            token: 'aisdnaksjdn,axmnczm',
-            isAdmin: true,
-            email: 'bricky@orchideight.com',
-            id: '12312323232',
-            expiration: moment().add(1, 'days').toDate(),
-            username: 'Bricky'
-        };
-    }
+    this.http.put<Token>(logoutUrl, logoutModel).subscribe(token => {
+      this.currentUser = null;
+      // Remove the user from local storage to clear the authentication state.
+      localStorage.removeItem('currentUser');
+    });
+  }
 
-    passwordResetRequest(email: string) {
-        return of(true).pipe(delay(1000));
-    }
+  getCurrentUser(): User {
+    return this.currentUser;
+  }
 
-    changePassword(email: string, currentPwd: string, newPwd: string) {
-        return of(true).pipe(delay(1000));
-    }
+  setCurrentUser(user: User): void {
+    this.currentUser = user;
+    this.localStorage.setItem('currentUser', JSON.stringify(user));
+  }
 
-    passwordReset(email: string, token: string, password: string, confirmPassword: string): any {
-        return of(true).pipe(delay(1000));
-    }
+  refreshToken(): User {
+    var user = this.currentUser;
+
+    var refreshUrl = environment.apiUrl + '/Authentication/Refresh';
+    var refreshModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
+
+    this.http.post<Token>(refreshUrl, refreshModel).subscribe(token => {
+      user.accessToken = token.accessToken;
+      user.refreshToken = token.refreshToken;
+      user.refreshTokenExpiration = token.refreshTokenExpiration;
+    });
+
+    this.setCurrentUser(user);
+
+    return user;
+  }
+
+  passwordResetRequest(email: string) {
+    return of(true).pipe(delay(1000));
+  }
+
+  changePassword(email: string, currentPwd: string, newPwd: string) {
+    return of(true).pipe(delay(1000));
+  }
+
+  passwordReset(email: string, token: string, password: string, confirmPassword: string): any {
+    return of(true).pipe(delay(1000));
+  }
 }
