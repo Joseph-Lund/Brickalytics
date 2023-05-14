@@ -1,4 +1,5 @@
 using System.Text;
+using Brickalytics.Helpers;
 using Brickalytics.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -61,7 +62,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IDapperService, DapperService>();
+builder.Services.AddScoped<IDapperHelper, DapperHelper>();
+builder.Services.AddScoped<ITokenHelper, TokenHelper>();
 builder.Services.AddScoped<IShopifyService, ShopifyService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();

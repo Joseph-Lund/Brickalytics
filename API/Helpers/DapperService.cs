@@ -3,15 +3,15 @@ using System.Data;
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 
-namespace Brickalytics.Services
+namespace Brickalytics.Helpers
 {
-    public class DapperService : IDapperService
+    public class DapperHelper : IDapperHelper
     {
-        private readonly ILogger<DapperService> _logger;
+        private readonly ILogger<DapperHelper> _logger;
         private readonly IConfiguration _config;
         private string Connectionstring = "DefaultConnection";
 
-        public DapperService(ILogger<DapperService> logger, IConfiguration config)
+        public DapperHelper(ILogger<DapperHelper> logger, IConfiguration config)
         {
             _logger = logger;
             _config = config;

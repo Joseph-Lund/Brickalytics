@@ -39,7 +39,7 @@ namespace Brickalytics.Controllers
                 }
                 if (VerifyPassword(loginInfo.Password!, user.Hash!, user.Salt!))
                 {
-                    var tokens = GenerateTokens(user.Id);
+                    var tokens = GenerateTokens(user.Id, user.RoleId);
                     user.RefreshToken = tokens.RefreshToken;
                     user.RefreshTokenExpiration = tokens.RefreshTokenExpiration;
                     await _userService.UpdateUserRefreshTokenAsync(user);
@@ -87,7 +87,7 @@ namespace Brickalytics.Controllers
             if (accessTokenUserId != null && refreshTokenUserId != null)
             {
                 var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
-                return GenerateTokens(user.Id);
+                return GenerateTokens(user.Id, user.RoleId);
             }
             else
             {
@@ -95,29 +95,29 @@ namespace Brickalytics.Controllers
             }
 
         }
-        private string GenerateAccessToken(int id)
+        private string GenerateAccessToken(int userId, int roleId)
         {
             // generate token that is valid for 1 minute
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", id.ToString()) }),
-                Expires = DateTime.UtcNow.AddMinutes(2),
+                Subject = new ClaimsIdentity(new[] { new Claim("id", userId.ToString()), new Claim("roleId", roleId.ToString()) }),
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JWT:TokenValidityInMinutes"])),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        private Tokens GenerateRefreshToken(int id)
+        private Tokens GenerateRefreshToken(int userId, int roleId)
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
-            var expires = DateTime.UtcNow.AddDays(7);
+            var expires = DateTime.UtcNow.AddDays(Convert.ToDouble(_configuration["JWT:RefreshTokenValidityInDays"]));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", id.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("id", userId.ToString()), new Claim("roleId", roleId.ToString()) }),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -151,21 +151,18 @@ namespace Brickalytics.Controllers
         }
         private bool VerifyPassword(string userEnteredPassword, string dbPasswordHash, string dbPasswordSalt)
         {
-
             string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: userEnteredPassword,
                 salt: Convert.FromBase64String(dbPasswordSalt),
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: 100000,
                 numBytesRequested: 256 / 8));
-
-
             return dbPasswordHash == hashedPassword;
         }
-        private Tokens GenerateTokens(int id)
+        private Tokens GenerateTokens(int userId, int roleId)
         {
-            var accessToken = GenerateAccessToken(id);
-            var refreshToken = GenerateRefreshToken(id);
+            var accessToken = GenerateAccessToken(userId, roleId);
+            var refreshToken = GenerateRefreshToken(userId, roleId);
 
             return new Tokens()
             {

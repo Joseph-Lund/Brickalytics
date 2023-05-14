@@ -1,15 +1,16 @@
 using Dapper;
 using System.Data;
 using Brickalytics.Models;
+using Brickalytics.Helpers;
 
 namespace Brickalytics.Services
 {
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
-        private readonly IDapperService _dapper;
+        private readonly IDapperHelper _dapper;
 
-        public UserService(ILogger<UserService> logger, IDapperService dapper)
+        public UserService(ILogger<UserService> logger, IDapperHelper dapper)
         {
             _logger = logger;
             _dapper = dapper;

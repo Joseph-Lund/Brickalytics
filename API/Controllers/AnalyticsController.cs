@@ -1,12 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Brickalytics.Helpers;
 using Brickalytics.Models;
 using Brickalytics.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 
 namespace Brickalytics.Controllers
 {
@@ -18,19 +18,23 @@ namespace Brickalytics.Controllers
         private readonly ILogger<AnalyticsController> _logger;
         private readonly IShopifyService _shopifyService;
         private readonly IUserService _userService;
+        private readonly ITokenHelper _tokenHelper;
+        private readonly string _accessToken;
 
-        public AnalyticsController(ILogger<AnalyticsController> logger, IUserService userService, IShopifyService shopifyService)
+        public AnalyticsController(ILogger<AnalyticsController> logger, IUserService userService, IShopifyService shopifyService, ITokenHelper tokenHelper)
         {
             _logger = logger;
             _shopifyService = shopifyService;
             _userService = userService;
+            _tokenHelper = tokenHelper;
+            _accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
         }
 
         [HttpGet]
-        [Route("ProductsSold/{userId:int}")]
-        public async Task<ProductSoldParent> GetProductsSold(int userId)
+        [Route("ProductsSold")]
+        public async Task<ProductSoldParent> GetProductsSold()
         {
-            var user = await _userService.GetUserByIdAsync(userId);
+            var user = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(_accessToken));
             if (user == null)
             {
                 throw new Exception();

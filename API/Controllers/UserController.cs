@@ -4,28 +4,38 @@ using Brickalytics.Services;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Brickalytics.Models;
+using Microsoft.Net.Http.Headers;
+using Brickalytics.Helpers;
 
 namespace Brickalytics.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly ITokenHelper _tokenHelper;
+        private readonly string _accessToken;
 
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        public UserController(ILogger<UserController> logger, IUserService userService, ITokenHelper tokenHelper)
         {
             _logger = logger;
             _userService = userService;
+            _tokenHelper = tokenHelper;
+            _accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
         }
 
         [HttpGet]
         public async Task<List<User>> GetUsers()
         {
-            var result = await _userService.GetUsersAsync();
-            return result;
+            if(_tokenHelper.IsUserAdmin(_accessToken))
+            {
+                var result = await _userService.GetUsersAsync();
+                return result;
+            }
+            throw new UnauthorizedAccessException();
         }
         [HttpGet]
         [Route("{id:int}")]
@@ -37,13 +47,21 @@ namespace Brickalytics.Controllers
         [HttpPost]
         public async Task<int> AddUser(User user)
         {
-            var result = await _userService.AddUserAsync(user);
-            return result;
+            if(_tokenHelper.IsUserAdmin(_accessToken))
+            {
+                var result = await _userService.AddUserAsync(user);
+                return result;
+            }
+            throw new UnauthorizedAccessException();
         }
         [HttpPut]
         public async Task UpdateUser(User user)
         {
-            await _userService.UpdateUserAsync(user);
+            if(_tokenHelper.IsUserAdmin(_accessToken))
+            {
+                await _userService.UpdateUserAsync(user);
+            }
+            throw new UnauthorizedAccessException();
         }
         [HttpPut]
         [Route("Password")]
@@ -69,13 +87,21 @@ namespace Brickalytics.Controllers
         [Route("Rate")]
         public async Task AddUpdateUserRate(UserRate userRate)
         {
-            await _userService.AddUpdateUserRateAsync(userRate);
+            if(_tokenHelper.IsUserAdmin(_accessToken))
+            {
+                await _userService.AddUpdateUserRateAsync(userRate);
+            }
+            throw new UnauthorizedAccessException();
         }
         [HttpDelete]
         [Route("Rate")]
         public async Task DeleteUserRate(UserRate userRate)
         {
-            await _userService.DeleteUserRateAsync(userRate);
+            if(_tokenHelper.IsUserAdmin(_accessToken))
+            {
+                await _userService.DeleteUserRateAsync(userRate);
+            }
+            throw new UnauthorizedAccessException();
         }
     }
 }

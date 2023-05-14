@@ -1,3 +1,4 @@
+using Brickalytics.Helpers;
 using Brickalytics.Models;
 
 namespace Brickalytics.Services
@@ -5,9 +6,9 @@ namespace Brickalytics.Services
     public class RoleService : IRoleService
     {
         private readonly ILogger<RoleService> _logger;
-        private readonly IDapperService _dapper;
+        private readonly IDapperHelper _dapper;
 
-        public RoleService(ILogger<RoleService> logger, IDapperService dapper)
+        public RoleService(ILogger<RoleService> logger, IDapperHelper dapper)
         {
             _logger = logger;
             _dapper = dapper;

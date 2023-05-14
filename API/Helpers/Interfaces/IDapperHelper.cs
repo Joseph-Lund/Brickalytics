@@ -2,9 +2,9 @@ using Dapper;
 using System.Data;
 using System.Data.Common;
 
-namespace Brickalytics.Services
+namespace Brickalytics.Helpers
 {
-    public interface IDapperService : IDisposable
+    public interface IDapperHelper : IDisposable
     {
         DbConnection GetDbconnection();
         T Get<T>(string sp, DynamicParameters parms, CommandType commandType = CommandType.StoredProcedure);

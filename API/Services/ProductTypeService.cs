@@ -1,3 +1,4 @@
+using Brickalytics.Helpers;
 using Brickalytics.Models;
 
 namespace Brickalytics.Services
@@ -5,9 +6,9 @@ namespace Brickalytics.Services
     public class ProductTypeService : IProductTypeService
     {
         private readonly ILogger<ProductTypeService> _logger;
-        private readonly IDapperService _dapper;
+        private readonly IDapperHelper _dapper;
 
-        public ProductTypeService(ILogger<ProductTypeService> logger, IDapperService dapper)
+        public ProductTypeService(ILogger<ProductTypeService> logger, IDapperHelper dapper)
         {
             _logger = logger;
             _dapper = dapper;
