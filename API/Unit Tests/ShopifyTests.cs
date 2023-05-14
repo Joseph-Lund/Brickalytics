@@ -46,6 +46,14 @@ namespace BrickalyticsTests.Tests
             var collectionsProducts = await _shopifyService.GetCollectionsProductsAsync(id);
             Assert.NotNull(collectionsProducts);
         }
+        [Fact]
+        public async Task GetCreatorsAnalytics()
+        {
+            long id = 266502930541;
+            var collectionsProducts = await _shopifyService.GetCollectionsProductsAsync(id);
+            Assert.NotNull(collectionsProducts);
+        }
+        
         // [Fact]
         // public async Task GetProductsSoldCount()
         // {

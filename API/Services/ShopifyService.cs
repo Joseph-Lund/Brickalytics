@@ -30,15 +30,30 @@ namespace Brickalytics.Services
             ShopifySharp.Product product = await productService.GetAsync(productId);
             return product;
         }
-        public async Task<IEnumerable<ShopifySharp.CustomCollection>> GetCollectionsAsync()
+        public async Task<List<Collection>> GetCollectionsAsync()
         {
             try
             {
-            var customCollectionService = CreateService<ShopifySharp.CustomCollectionService>();
-            IEnumerable<ShopifySharp.CustomCollection> collections = (await customCollectionService.ListAsync()).Items;
-            return collections;
+                var customCollectionService = CreateService<ShopifySharp.CustomCollectionService>();
+                var smartCollectionService = CreateService<ShopifySharp.SmartCollectionService>();
+                IEnumerable<ShopifySharp.CustomCollection> customCollections = (await customCollectionService.ListAsync()).Items;
+                IEnumerable<ShopifySharp.SmartCollection> smartCollections = (await smartCollectionService.ListAsync()).Items;
+                List<Collection> collections = customCollections
+                .Select(collection => new Collection
+                {
+                    Id = collection.Id,
+                    Title = collection.Title
+                })
+                .Concat(smartCollections
+                .Select(collection => new Collection
+                {
+                    Id = collection.Id,
+                    Title = collection.Title
+                })).ToList();
+                return collections;
             }
-            catch(Exception ex){
+            catch (Exception ex)
+            {
                 Console.Write(ex);
                 throw;
             }
@@ -52,7 +67,7 @@ namespace Brickalytics.Services
         public async Task<IDictionary<long, Order>> GetProductsSoldCountAsync(IDictionary<long, Order> analyticsDict, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
         {
             var ordersInfo = new List<Order>();
-            
+
             var filter = CreateFilter(startDate, endDate);
 
             var orderService = CreateService<ShopifySharp.OrderService>();
@@ -61,14 +76,15 @@ namespace Brickalytics.Services
             analyticsDict = GetOrderCountsDict(orders, analyticsDict);
             return analyticsDict;
         }
-        public async Task<List<Order>> GetCreatorsAnalytics(long collectionId, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
+        public async Task<List<Order>> GetCreatorsAnalytics(User user, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
         {
-            var products = await GetCollectionsProductsAsync(collectionId);
+
+            var products = await GetCollectionsProductsAsync(user.CollectionId);
 
             Dictionary<long, Order> analyticsDict = products
             .ToDictionary(
                 product => (long)product.Id!,
-                product => new Order { ProductId = (long)product.Id!, Name = product.Title, ProductTypeId = GetProductType(product.ProductType)}
+                product => new Order { ProductId = (long)product.Id!, Name = product.Title, ProductTypeId = GetProductType(product.ProductType) }
             );
 
             var productDictionary = GetProductsSoldCountAsync(analyticsDict, startDate, endDate);
@@ -89,6 +105,8 @@ namespace Brickalytics.Services
                     return (T)(object)new ShopifySharp.ProductService(url, accessToken);
                 case Type t when t == typeof(ShopifySharp.CustomCollectionService):
                     return (T)(object)new ShopifySharp.CustomCollectionService(url, accessToken);
+                case Type t when t == typeof(ShopifySharp.SmartCollectionService):
+                    return (T)(object)new ShopifySharp.SmartCollectionService(url, accessToken);
                 case Type t when t == typeof(ShopifySharp.CollectionService):
                     return (T)(object)new ShopifySharp.CollectionService(url, accessToken);
                 default:
@@ -114,7 +132,7 @@ namespace Brickalytics.Services
                         }
                         else
                         {
-                            analyticsDict.Add(productId, new Order(){ProductId = productId, Count = 1});
+                            analyticsDict.Add(productId, new Order() { ProductId = productId, Count = 1 });
                         }
                     }
                 }
@@ -147,7 +165,7 @@ namespace Brickalytics.Services
 
         private int GetProductType(string name)
         {
-            if(Enum.GetNames(typeof(ProductTypes)).Contains(name))
+            if (Enum.GetNames(typeof(ProductTypes)).Contains(name))
             {
                 return (int)Enum.Parse(typeof(ProductTypes), name);
             }

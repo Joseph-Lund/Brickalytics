@@ -28,6 +28,14 @@ namespace Brickalytics.Services
             var result = await Task.FromResult(_dapper.Get<User>("GetUserById", parameters));
             return result;
         }
+        public async Task<List<UserRate>> GetUserRatesByIdAsync(int userId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", userId);
+
+            var result = await Task.FromResult(_dapper.GetAll<UserRate>("GetUserRatesById", parameters));
+            return result;
+        }
         public async Task<User> GetUserByCreatorNameAsync(string creatorName)
         {
             var parameters = new DynamicParameters();

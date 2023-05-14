@@ -6,6 +6,7 @@ namespace Brickalytics.Services
     {    
         Task<List<User>> GetUsersAsync();
         Task<User> GetUserByIdAsync(int id);
+        Task<List<UserRate>> GetUserRatesByIdAsync(int userId);
         Task<User> GetUserByCreatorNameAsync(string creatorName);
         Task<int> AddUserAsync(User user);
         Task UpdateUserAsync(User user);
