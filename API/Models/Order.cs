@@ -6,7 +6,7 @@ namespace Brickalytics.Models
         public int Count { get; set; }
         public string? Name { get; set; }
         public decimal Price { get; set; }
-        public int ProductTypeId { get; set; }
+        public ProductTypes ProductType { get; set; }
         
     }
 }
