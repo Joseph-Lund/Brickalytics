@@ -9,7 +9,7 @@ namespace Brickalytics.Models
         public string? Hash { get; set; }
         public string? Salt { get; set; }
         public int RoleId {get; set;}
-        public int CollectionId {get; set;}
+        public long CollectionId {get; set;}
         public string? RefreshToken {get; set;}
         public DateTime? RefreshTokenExpiration {get; set;}
     }

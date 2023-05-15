@@ -25,7 +25,6 @@ namespace Brickalytics.Services
         {
             var parameters = new DynamicParameters();
             parameters.Add("Id", id);
-
             var result = await Task.FromResult(_dapper.Get<User>("GetUserById", parameters));
             return result;
         }

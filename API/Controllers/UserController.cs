@@ -9,7 +9,7 @@ using Brickalytics.Helpers;
 
 namespace Brickalytics.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -17,21 +17,20 @@ namespace Brickalytics.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
         private readonly ITokenHelper _tokenHelper;
-        private readonly string _accessToken;
 
         public UserController(ILogger<UserController> logger, IUserService userService, ITokenHelper tokenHelper)
         {
             _logger = logger;
             _userService = userService;
             _tokenHelper = tokenHelper;
-            _accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
         }
 
         [HttpGet]
         public async Task<List<User>> GetUsers()
         {
-            if(_tokenHelper.IsUserAdmin(_accessToken))
-            {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
+            {   await _userService.GetUsersAsync();
                 var result = await _userService.GetUsersAsync();
                 return result;
             }
@@ -47,7 +46,8 @@ namespace Brickalytics.Controllers
         [HttpPost]
         public async Task<int> AddUser(User user)
         {
-            if(_tokenHelper.IsUserAdmin(_accessToken))
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
             {
                 var result = await _userService.AddUserAsync(user);
                 return result;
@@ -57,7 +57,8 @@ namespace Brickalytics.Controllers
         [HttpPut]
         public async Task UpdateUser(User user)
         {
-            if(_tokenHelper.IsUserAdmin(_accessToken))
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
             {
                 await _userService.UpdateUserAsync(user);
             }
@@ -87,7 +88,8 @@ namespace Brickalytics.Controllers
         [Route("Rate")]
         public async Task AddUpdateUserRate(UserRate userRate)
         {
-            if(_tokenHelper.IsUserAdmin(_accessToken))
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
             {
                 await _userService.AddUpdateUserRateAsync(userRate);
             }
@@ -97,7 +99,8 @@ namespace Brickalytics.Controllers
         [Route("Rate")]
         public async Task DeleteUserRate(UserRate userRate)
         {
-            if(_tokenHelper.IsUserAdmin(_accessToken))
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
             {
                 await _userService.DeleteUserRateAsync(userRate);
             }

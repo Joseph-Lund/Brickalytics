@@ -16,20 +16,19 @@ namespace Brickalytics.Controllers
         private readonly ILogger<RoleController> _logger;
         private readonly IRoleService _roleService;
         private readonly ITokenHelper _tokenHelper;
-        private readonly string _accessToken;
 
         public RoleController(ILogger<RoleController> logger, IRoleService roleService, ITokenHelper tokenHelper)
         {
             _logger = logger;
             _roleService = roleService;
             _tokenHelper = tokenHelper;
-            _accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
         }
 
         [HttpGet]
         public async Task<List<Role>> GetRoles()
         {
-            if(_tokenHelper.IsUserAdmin(_accessToken))
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
             {
                 var result = await _roleService.GetRolesAsync();
                 return result;

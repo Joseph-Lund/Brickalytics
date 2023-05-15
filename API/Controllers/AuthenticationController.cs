@@ -82,6 +82,7 @@ namespace Brickalytics.Controllers
         [Route("Refresh")]
         public async Task<Tokens?> Refresh(Tokens tokens)
         {
+            //TODO: Refresh token should check with sql db if it is the same token assigned to the user last
             var accessTokenUserId = ValidateToken(tokens.AccessToken!);
             var refreshTokenUserId = ValidateToken(tokens.RefreshToken!);
             if (accessTokenUserId != null && refreshTokenUserId != null)

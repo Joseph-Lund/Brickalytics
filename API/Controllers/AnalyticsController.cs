@@ -19,7 +19,6 @@ namespace Brickalytics.Controllers
         private readonly IShopifyService _shopifyService;
         private readonly IUserService _userService;
         private readonly ITokenHelper _tokenHelper;
-        private readonly string _accessToken;
 
         public AnalyticsController(ILogger<AnalyticsController> logger, IUserService userService, IShopifyService shopifyService, ITokenHelper tokenHelper)
         {
@@ -27,14 +26,14 @@ namespace Brickalytics.Controllers
             _shopifyService = shopifyService;
             _userService = userService;
             _tokenHelper = tokenHelper;
-            _accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
         }
 
         [HttpGet]
         [Route("ProductsSold")]
         public async Task<ProductSoldParent> GetProductsSold()
         {
-            var user = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(_accessToken));
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var user = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
             if (user == null)
             {
                 throw new Exception();
