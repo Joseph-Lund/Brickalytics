@@ -8,7 +8,7 @@ namespace Brickalytics.Services
         Task<IEnumerable<ShopifySharp.Product>> GetProductsAsync();
         Task<ShopifySharp.Product> GetProductByIdAsync(long productId);
         Task<List<Collection>> GetCollectionsAsync();
-        Task<List<Order>> GetCreatorsAnalyticsAsync(User userId, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null);
+        Task<List<Order>> GetCreatorsAnalyticsAsync(User userId, DateTime? startDate, DateTime? endDate);
 
     }    
 }    

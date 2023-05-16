@@ -5,7 +5,7 @@
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": "API",
+            "name": "api",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -28,7 +28,7 @@
             }
         },
         {
-            "name": "UI",
+            "name": "ui",
             "type": "chrome",
             "request": "launch",
             "url": "https://localhost:44423",
@@ -39,7 +39,7 @@
     "compounds": [
         {
             "name": "API/UI",
-            "configurations": ["API", "UI"]
+            "configurations": ["api", "ui"]
         }
     ]
 }

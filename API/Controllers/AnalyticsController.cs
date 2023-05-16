@@ -28,9 +28,9 @@ namespace Brickalytics.Controllers
             _tokenHelper = tokenHelper;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("ProductsSold")]
-        public async Task<ProductSoldParent> GetProductsSold()
+        public async Task<ProductSoldParent> GetProductsSold(Dates dates)
         {
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
             var user = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
@@ -39,7 +39,7 @@ namespace Brickalytics.Controllers
                 throw new Exception();
             }
             var productsSoldTotal = 0;
-            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user);
+            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, dates.StartDate, dates.EndDate);
             var rates = await _userService.GetUserRatesAsync(user);
             List<ProductSoldChild> items = new List<ProductSoldChild>();
 
@@ -50,8 +50,7 @@ namespace Brickalytics.Controllers
                 var item = new ProductSoldChild()
                 {
                     Count = order.Count, 
-                    ItemName = order.Name, 
-                    Price = order.Price,
+                    ItemName = order.Name,
                     Total = total
                 };
                 items.Add(item);

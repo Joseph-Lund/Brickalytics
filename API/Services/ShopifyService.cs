@@ -32,67 +32,107 @@ namespace Brickalytics.Services
         }
         public async Task<List<Collection>> GetCollectionsAsync()
         {
-            try
+            var customCollectionService = CreateService<ShopifySharp.CustomCollectionService>();
+            var smartCollectionService = CreateService<ShopifySharp.SmartCollectionService>();
+            IEnumerable<ShopifySharp.CustomCollection> customCollections = (await customCollectionService.ListAsync()).Items;
+            IEnumerable<ShopifySharp.SmartCollection> smartCollections = (await smartCollectionService.ListAsync()).Items;
+            List<Collection> collections = customCollections
+            .Select(collection => new Collection
             {
-                var customCollectionService = CreateService<ShopifySharp.CustomCollectionService>();
-                var smartCollectionService = CreateService<ShopifySharp.SmartCollectionService>();
-                IEnumerable<ShopifySharp.CustomCollection> customCollections = (await customCollectionService.ListAsync()).Items;
-                IEnumerable<ShopifySharp.SmartCollection> smartCollections = (await smartCollectionService.ListAsync()).Items;
-                List<Collection> collections = customCollections
-                .Select(collection => new Collection
-                {
-                    Id = collection.Id,
-                    Title = collection.Title
-                })
-                .Concat(smartCollections
-                .Select(collection => new Collection
-                {
-                    Id = collection.Id,
-                    Title = collection.Title
-                })).ToList();
-                return collections;
-            }
-            catch (Exception ex)
+                Id = collection.Id,
+                Title = collection.Title
+            })
+            .Concat(smartCollections
+            .Select(collection => new Collection
             {
-                Console.Write(ex);
-                throw;
-            }
+                Id = collection.Id,
+                Title = collection.Title
+            })).ToList();
+            return collections;
         }
-        public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
+        public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, DateTime? startDate, DateTime? endDate)
         {
-            //TODO: REMOVE THIS
-            if(user.CollectionId == null){
-            user.CollectionId = 199995129965;
+            //TODO: If user is not normal user, then get all the users collection ids
+            if (user.CollectionId == null)
+            {
+                user.CollectionId = 199995129965;
             }
 
-            var products = await GetCollectionsProductsAsync((long)user.CollectionId);
+            var products = await GetCollectionsProductsAsync((long)user.CollectionId, startDate, endDate);
 
-            Dictionary<long, Order> analyticsDict = products
-            .ToDictionary(
-                product => (long)product.Id!,
-                product => new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType) }
-            );
-
-            var productDictionary = GetProductsSoldCountAsync(analyticsDict, startDate, endDate);
-            var analytics = analyticsDict.Select(analytic => analytic.Value).ToList();
+            var analytics = products.Select(analytic => analytic.Value).ToList();
             return analytics;
         }
-        private async Task<IDictionary<long, Order>> GetProductsSoldCountAsync(IDictionary<long, Order> analyticsDict, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
+        private async Task<IDictionary<long, Order>> GetProductsSoldCountAsync(IDictionary<long, Order> analyticsDict, DateTime? startDate, DateTime? endDate)
         {
             var ordersInfo = new List<Order>();
 
-            IEnumerable<ShopifySharp.Order> orders = await GetCollectionOrders();
+            IEnumerable<ShopifySharp.Order> orders = await GetCollectionOrders(startDate, endDate);
             analyticsDict = GetOrderCountsDict(orders, analyticsDict);
 
             return analyticsDict;
         }
-        private async Task<IEnumerable<ShopifySharp.Product>> GetCollectionsProductsAsync(long collectionId)
+
+        private async Task<List<ShopifySharp.Order>> GetCollectionOrders(DateTime? startDate, DateTime? endDate)
+        {
+
+            var orderService = CreateService<ShopifySharp.OrderService>();
+            var allOrders = new List<ShopifySharp.Order>();
+            ShopifySharp.Lists.ListResult<ShopifySharp.Order> page;
+
+            page = await orderService.ListAsync(CreateOrderListFilter(startDate, endDate));
+
+            while (true)
+            {
+                allOrders.AddRange(page.Items);
+
+                if (!page.HasNextPage)
+                {
+                    break;
+                }
+
+                page = await orderService.ListAsync(page.GetNextPageFilter());
+            }
+            return allOrders;
+        }
+        private async Task<IDictionary<long, Order>> GetCollectionsProductsAsync(long collectionId, DateTime? startDate, DateTime? endDate)
         {
             var collectionService = CreateService<ShopifySharp.CollectionService>();
-            IEnumerable<ShopifySharp.Product> collectionProducts = (await collectionService.ListProductsAsync(collectionId)).Items;
+            IDictionary<long, Order> collectionProducts = (await collectionService.ListProductsAsync(collectionId)).Items
+            .ToDictionary(
+                product => (long)product.Id!,
+                product => new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType) }
+            );
+            collectionProducts = await GetProductsSoldCountAsync(collectionProducts, startDate, endDate);
             return collectionProducts;
         }
+        private IDictionary<long, Order> GetOrderCountsDict(IEnumerable<ShopifySharp.Order> orders, IDictionary<long, Order> analyticsDict)
+        {
+            var productIds = analyticsDict.Keys.ToList();
 
+            foreach (var order in orders)
+            {
+                foreach (var lineItem in order.LineItems)
+                {
+                    if (productIds.Contains((long)lineItem.ProductId!))
+                    {
+                        long productId = (long)lineItem.ProductId!;
+                        decimal price = (decimal)lineItem.Price!;
+                        if (analyticsDict.ContainsKey(productId))
+                        {
+                            analyticsDict[productId].Price = price;
+                            analyticsDict[productId].Count++;
+                        }
+                        else
+                        {
+                            analyticsDict.Add(productId, new Order() { ProductId = productId, Count = 1, Price = price });
+                        }
+                    }
+                }
+            }
+
+            return analyticsDict;
+        }
         private T CreateService<T>()
         {
             var url = _config["ShopifyAPI:URL"];
@@ -114,79 +154,30 @@ namespace Brickalytics.Services
                     throw new ArgumentException("Unsupported service type");
             }
         }
-
-        private IDictionary<long, Order> GetOrderCountsDict(IEnumerable<ShopifySharp.Order> orders, IDictionary<long, Order> analyticsDict)
+        private ShopifySharp.Filters.OrderListFilter CreateOrderListFilter(DateTimeOffset? startDate, DateTimeOffset? endDate)
         {
-            var productIds = analyticsDict.Keys.ToList();
-
-            foreach (var order in orders)
-            {
-                foreach (var lineItem in order.LineItems)
-                {
-                    if (productIds.Contains((long)lineItem.ProductId!))
-                    {
-                        long productId = (long)lineItem.ProductId!;
-                        decimal price = (decimal)lineItem.Price!;
-                        if (analyticsDict.ContainsKey(productId))
-                        {
-                            analyticsDict[productId].Count++;
-                        }
-                        else
-                        {
-                            analyticsDict.Add(productId, new Order() { ProductId = productId, Count = 1, Price = price });
-                        }
-                    }
-                }
-            }
-
-            return analyticsDict;
-        }
-        private ShopifySharp.Filters.OrderListFilter CreateOrderListFilter(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
-        {
+            var defaultDate = new DateTime(2023, 5, 6, 0, 0, 0);
 
             if (startDate == null)
             {
-                startDate = new DateTime(2023, 5, 7);
+                startDate = defaultDate;
             }
             if (endDate == null)
             {
-                endDate = new DateTime(2023, 5, 9);
+                endDate = defaultDate.AddDays(1).AddSeconds(-1);
             }
 
             var filter = new ShopifySharp.Filters.OrderListFilter()
             {
-                CreatedAtMax = startDate,
-                CreatedAtMin = endDate,
+                Limit = 250,
+                CreatedAtMin = startDate,
+                CreatedAtMax = endDate,
                 Status = "any",
                 FinancialStatus = "paid",
-                FulfillmentStatus = "any",
-                Limit = 250
+                FulfillmentStatus = "shipped"
             };
             return filter;
         }
-        private ShopifySharp.Filters.OrderCountFilter CreateOrderCountFilter(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
-        {
-
-            if (startDate == null)
-            {
-                startDate = new DateTime(2023, 5, 7);
-            }
-            if (endDate == null)
-            {
-                endDate = new DateTime(2023, 5, 9);
-            }
-
-            var filter = new ShopifySharp.Filters.OrderCountFilter()
-            {
-                CreatedAtMax = startDate,
-                CreatedAtMin = endDate,
-                Status = "any",
-                FinancialStatus = "paid",
-                FulfillmentStatus = "any"
-            };
-            return filter;
-        }
-
         private int GetProductTypeId(string name)
         {
             if (Enum.GetNames(typeof(ProductTypes)).Contains(name))
@@ -198,29 +189,7 @@ namespace Brickalytics.Services
                 return 0;
             }
         }
-        private async Task<List<ShopifySharp.Order>> GetCollectionOrders()
-        {
 
-            var orderService = CreateService<ShopifySharp.OrderService>();
-            var allOrders = new List<ShopifySharp.Order>();
-
-            var page = await orderService.ListAsync(CreateOrderListFilter());
-
-            while (true)
-            {
-                allOrders.AddRange(page.Items);
-
-                if (!page.HasNextPage)
-                {
-                    break;
-                }
-
-                page = await orderService.ListAsync(CreateOrderListFilter());
-            }
-            return allOrders;
-
-
-        }
         public void Dispose()
         {
 
