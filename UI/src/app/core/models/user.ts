@@ -1,18 +1,18 @@
 export class User {
-  id: number;
-  creatorName?: string;
-  email?: string;
+  id: number | null;
+  creatorName: string;
+  email: string | null;
   active: boolean;
   roleId: number;
-  collectionId: number;
+  collectionId: number | null;
 
   constructor(
-    id: number,
+    id: number | null,
     active: boolean,
     roleId: number,
-    collectionId: number,
-    creatorName?: string,
-    email?: string
+    collectionId: number | null,
+    creatorName: string,
+    email: string | null
   ) {
     this.id = id;
     this.active = active;

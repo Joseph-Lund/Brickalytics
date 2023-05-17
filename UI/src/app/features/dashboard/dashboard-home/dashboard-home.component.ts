@@ -8,11 +8,25 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
 import { ProductsSoldChild } from 'src/app/core/models/productsSoldChild';
 
-export interface Tile {
-  cols: number;
-  rows: number;
-  title: string;
+export interface OrderDetails {
+  orderId: number;
+  date: string;
+  price: number;
+  profit: number;
 }
+
+const DATA: OrderDetails[] = [
+  {orderId: 1, date: 'Hydrogen', price: 2, profit: 1},
+  {orderId: 2, date: 'Helium', price: 2, profit: 1},
+  {orderId: 3, date: 'Lithium', price: 2, profit: 1},
+  {orderId: 4, date: 'Beryllium', price: 2, profit: 1},
+  {orderId: 5, date: 'Boron', price: 2, profit: 1},
+  {orderId: 6, date: 'Carbon', price: 2, profit: 1},
+  {orderId: 7, date: 'Nitrogen', price: 2, profit: 1},
+  {orderId: 8, date: 'Oxygen', price: 2, profit: 1},
+  {orderId: 9, date: 'Fluorine', price: 2, profit: 1},
+  {orderId: 10, date: 'Neon', price: 2, profit: 1},
+];
 @Component({
   selector: 'app-dashboard-home',
   templateUrl: './dashboard-home.component.html',
@@ -24,12 +38,8 @@ export class DashboardHomeComponent implements OnInit {
   currentUser: CurrentUser | null = null;
   rangeForm!: FormGroup;
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, [new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1)]);
-
-  tiles: Tile[] = [
-    { title: 'Tile 1', cols: 1, rows: 1 },
-    { title: 'Tile 2', cols: 2, rows: 1 }
-  ];
-
+  displayedColumns: string[] = ['orderId', 'date', 'price', 'profit'];
+  dataSource = DATA;
   constructor(private userService: UserService,
     private authService: AuthenticationService,
     private dashboardService: DashboardService,
@@ -40,7 +50,7 @@ export class DashboardHomeComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
     this.titleService.setTitle('Brickalytics - Dashboard');
     this.createForm();
-    // this.getProductsSold();
+    this.getProductsSold();
   }
 
   getUserById(id: number) {
@@ -64,11 +74,12 @@ export class DashboardHomeComponent implements OnInit {
   private createForm() {
     // default to the last week
     var lastMonday = this.getMonday(this.getLastWeek());
-    var monday = this.getMonday(new Date());
+    var sunday = this.getMonday(new Date());
+    sunday.setDate(sunday.getDate() - 1);
 
     this.rangeForm = new FormGroup({
       start: new FormControl(new Date(lastMonday.setHours(0,0,0,0)), Validators.required),
-      end: new FormControl(new Date(monday.setUTCHours(23,59,59,999)), Validators.required)
+      end: new FormControl(new Date(sunday.setUTCHours(23,59,59,999)), Validators.required)
     });
 
 }

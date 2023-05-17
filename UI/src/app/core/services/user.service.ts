@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import { User } from '../models/user';
 import { Observable } from 'rxjs';
 import { UserRate } from '../models/userRate';
+import { GenericType } from '../models/genericType';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,14 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
+  }
+  getRoles(): Observable<GenericType[]> {
+    const url = `${this.apiUrl}/Roles`;
+    return this.http.get<GenericType[]>(url);
+  }
+  getCollections(): Observable<GenericType[]> {
+    const url = `${this.apiUrl}/Collections`;
+    return this.http.get<GenericType[]>(url);
   }
 
   getUserById(id: number): Observable<User> {

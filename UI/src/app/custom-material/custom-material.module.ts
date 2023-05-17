@@ -39,7 +39,7 @@ export const MY_FORMATS = {
     dateInput: 'DD MMM YYYY',
   },
   display: {
-    dateInput: 'DD MMM YYYY',
+    dateInput: 'MM/DD/YYYY',
     monthYearLabel: 'MMM YYYY',
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'MMMM YYYY'

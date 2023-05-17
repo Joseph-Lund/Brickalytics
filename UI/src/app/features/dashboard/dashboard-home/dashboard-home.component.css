@@ -32,3 +32,9 @@ mat-list{
   flex-grow: 1;
   overflow: auto;
 }
+table {
+  width: 100%;
+}
+.mat-header-cell{
+  text-align: center;
+}

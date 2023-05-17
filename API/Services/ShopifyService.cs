@@ -40,13 +40,13 @@ namespace Brickalytics.Services
             .Select(collection => new Collection
             {
                 Id = collection.Id,
-                Title = collection.Title
+                Name = collection.Title
             })
             .Concat(smartCollections
             .Select(collection => new Collection
             {
                 Id = collection.Id,
-                Title = collection.Title
+                Name = collection.Title
             })).ToList();
             return collections;
         }
@@ -98,10 +98,15 @@ namespace Brickalytics.Services
         private async Task<IDictionary<long, Order>> GetCollectionsProductsAsync(long collectionId, DateTime? startDate, DateTime? endDate)
         {
             var collectionService = CreateService<ShopifySharp.CollectionService>();
-            IDictionary<long, Order> collectionProducts = (await collectionService.ListProductsAsync(collectionId)).Items
+            var collections = await collectionService.ListProductsAsync(collectionId);
+            IDictionary<long, Order> collectionProducts = (collections).Items
             .ToDictionary(
                 product => (long)product.Id!,
-                product => new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType) }
+                product => new Order {  
+                    ProductId = (long)product.Id!, 
+                    Name = product.Title, 
+                    ProductType = (ProductTypes)GetProductTypeId(product.ProductType)
+                }
             );
             collectionProducts = await GetProductsSoldCountAsync(collectionProducts, startDate, endDate);
             return collectionProducts;
@@ -109,29 +114,32 @@ namespace Brickalytics.Services
         private IDictionary<long, Order> GetOrderCountsDict(IEnumerable<ShopifySharp.Order> orders, IDictionary<long, Order> analyticsDict)
         {
             var productIds = analyticsDict.Keys.ToList();
-
             foreach (var order in orders)
             {
                 foreach (var lineItem in order.LineItems)
                 {
-                    if (productIds.Contains((long)lineItem.ProductId!))
+                    if (lineItem.ProductId != null)
                     {
-                        long productId = (long)lineItem.ProductId!;
-                        decimal price = (decimal)lineItem.Price!;
-                        if (analyticsDict.ContainsKey(productId))
+                        if (productIds.Contains((long)lineItem.ProductId!))
                         {
-                            analyticsDict[productId].Price = price;
-                            analyticsDict[productId].Count++;
-                        }
-                        else
-                        {
-                            analyticsDict.Add(productId, new Order() { ProductId = productId, Count = 1, Price = price });
+                            long productId = (long)lineItem.ProductId!;
+                            decimal price = (decimal)lineItem.Price!;
+                            if (analyticsDict.ContainsKey(productId))
+                            {
+                                analyticsDict[productId].Price = price;
+                                analyticsDict[productId].Count++;
+                            }
+                            else
+                            {
+                                analyticsDict.Add(productId, new Order() { ProductId = productId, Count = 1, Price = price });
+                            }
                         }
                     }
                 }
             }
 
             return analyticsDict;
+
         }
         private T CreateService<T>()
         {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { GenericType } from 'src/app/core/models/genericType';
 import { ProductSubType } from 'src/app/core/models/productSubType';
@@ -6,7 +7,6 @@ import { User } from 'src/app/core/models/user';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { ProductSubTypeService } from 'src/app/core/services/productSubType.service';
 import { ProductTypeService } from 'src/app/core/services/productType.service';
-import { RoleService } from 'src/app/core/services/role.service';
 import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -18,12 +18,21 @@ export class UserListComponent implements OnInit {
 
   userList: User[] = [];
   roleList: GenericType[] = [];
+  collectionList: GenericType[] = [];
   productTypeList: GenericType[] = [];
   productSubTypeList: ProductSubType[] = [];
+  length = 50;
+  pageSize = 10;
+  pageIndex = 0;
+  pageSizeOptions = [5, 10, 25];
+  isLoadingResults: boolean = false;
+  isRateLimitReached: boolean = false;
+  showFirstLastButtons: boolean = true;
+  pageEvent: PageEvent | null = null;
+  displayedColumns: string[] = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
 
   constructor(
     private userService: UserService,
-    private roleService: RoleService,
     private productTypeService: ProductTypeService,
     private productSubTypeService: ProductSubTypeService,
     private titleService: Title,
@@ -32,6 +41,9 @@ export class UserListComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Brickalytics - Users');
+    this.getUsersList();
+    this.getRolesList();
+    this.getCollectionsList();
   }
 
   getUsersList(){
@@ -44,8 +56,17 @@ export class UserListComponent implements OnInit {
     });
   }
   getRolesList(){
-    this.roleService.getRoles().subscribe(roles =>{
+    this.userService.getRoles().subscribe(roles =>{
       this.roleList = roles;
+    },
+    err =>{
+      console.error('Error getting role list: ', err)
+      this.notificationService.openSnackBar('Error getting role list');
+    });
+  }
+  getCollectionsList(){
+    this.userService.getCollections().subscribe(collections =>{
+      this.collectionList = collections;
     },
     err =>{
       console.error('Error getting role list: ', err)
@@ -70,15 +91,6 @@ export class UserListComponent implements OnInit {
       this.notificationService.openSnackBar('Error getting product sub type list');
     });
   }
-  getCollectionsList(){
-    this.userService.getUsers().subscribe(users =>{
-      this.userList = users;
-    },
-    err =>{
-      console.error('Error getting collections list: ', err)
-      this.notificationService.openSnackBar('Error getting collections list');
-    });
-  }
   addUser(user: User){
     this.userService.addUser(user).subscribe(userId =>{
       user.id = userId;
@@ -99,18 +111,43 @@ export class UserListComponent implements OnInit {
     });
   }
   updateUserPassword(user: User, password: string){
-    this.userService.updateUserPassword(user.id, password).subscribe(userId =>{},
+    this.userService.updateUserPassword(user.id!, password).subscribe(userId =>{},
     err =>{
       console.error('Error updating user password: ', err)
       this.notificationService.openSnackBar('Error updating user password');
     });
   }
+  getRole(id:number | null){
+    for(var role of this.roleList){
+      if(role.id == id){
+        return role.name;
+      }
+    }
+    return "None";
+  }
+  getCollection(id:number | null){
+    for(var collection of this.collectionList){
+      if(collection.id == id){
+        return collection.name;
+      }
+    }
+    return "None";
+  }
+  openUserModal(user: User | null = null){
 
-  // getUserById(id: number): User{
-  //   var userToReturn;
-  //   this.userService.getUserById(id).subscribe(user =>{
-  //     userToReturn = user;
-  //   });
+  }
+
+  // handlePageEvent(e: PageEvent) {
+  //   this.pageEvent = e;
+  //   this.length = e.length;
+  //   this.pageSize = e.pageSize;
+  //   this.pageIndex = e.pageIndex;
+  // }
+
+  // setPageSizeOptions(setPageSizeOptionsInput: string) {
+  //   if (setPageSizeOptionsInput) {
+  //     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
+  //   }
   // }
 
 

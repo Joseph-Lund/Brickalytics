@@ -1,24 +1,92 @@
 <div class="container" fxLayout="row" fxLayoutAlign="center none">
-  <div fxFlex="95%">
+  <div fxFlex="100%">
 
     <mat-card>
+      <mat-card-header class="dashboard-card-header">
+      <mat-card-title>
+        Users
+      </mat-card-title>
+    </mat-card-header>
       <mat-card-content>
-        <h2>Users</h2>
+        <div class="row col-md-12">
+          <div class="col-md-11"></div>
+          <div class="col-md-1">
+            <button mat-button color="primary" (click)="openUserModal()">ADD USER</button>
+          </div>
+        </div>
 
 
         <div class="container" fxLayout="row" fxLayoutAlign="center none">
-          <div fxFlex="50%" class="text-center no-records animate">
-            <mat-icon>people_outline</mat-icon>
-            <p>No users exist.</p>
+          <div fxFlex="100%" class="text-center no-records animate">
+            <div class="example-container mat-elevation-z8">
+              <div class="example-loading-shade"
+                   *ngIf="isLoadingResults || isRateLimitReached">
+                <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+                <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
+                  GitHub's API rate limit has been reached. It will be reset in one minute.
+                </div>
+              </div>
+
+              <div class="example-table-container">
+
+                <table mat-table [dataSource]="userList" class="example-table"
+                       matSort matSortActive="created" matSortDisableClear matSortDirection="desc">
+                  <!-- Number Column -->
+                  <ng-container matColumnDef="CreatorName">
+                    <th mat-header-cell *matHeaderCellDef>CreatorName</th>
+                    <td mat-cell *matCellDef="let row">{{row.creatorName}}</td>
+                  </ng-container>
+
+                  <!-- Title Column -->
+                  <ng-container matColumnDef="Role">
+                    <th mat-header-cell *matHeaderCellDef>role</th>
+                    <td mat-cell *matCellDef="let row">{{getRole(row.roleId)}}</td>
+                  </ng-container>
+
+                  <!-- State Column -->
+                  <ng-container matColumnDef="Collection">
+                    <th mat-header-cell *matHeaderCellDef>Collection</th>
+                    <td mat-cell *matCellDef="let row">{{getCollection(row.collectionId)}}</td>
+                  </ng-container>
+
+                  <!-- State Column -->
+                  <ng-container matColumnDef="Active">
+                    <th mat-header-cell *matHeaderCellDef>Active</th>
+                    <td mat-cell *matCellDef="let row"><span style="text-align: left;">{{row.active ? 'True' : 'False'}}</span></td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="Actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let row">
+                      <button mat-button color="accent" (click)="openUserModal(row)">EDIT USER</button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+
+              <!-- <mat-paginator #paginator
+               class="demo-paginator"
+               (page)="handlePageEvent($event)"
+               [length]="length"
+               [pageSize]="pageSize"
+               [showFirstLastButtons]="showFirstLastButtons"
+               [pageSizeOptions]="[]"
+               [pageIndex]="pageIndex"
+               aria-label="Select page">
+                </mat-paginator> -->
+            </div>
           </div>
           <mat-icon> </mat-icon>
         </div>
 
       </mat-card-content>
-      <mat-card-actions align="end">
-        <button mat-button>ADD USER</button>
-      </mat-card-actions>
+      <!-- <mat-card-actions align="end">
+        <button mat-flat-button color="accent" (click)="openUserModal()">EDIT USER</button>
+      </mat-card-actions> -->
     </mat-card>
-
   </div>
 </div>

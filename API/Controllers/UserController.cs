@@ -16,13 +16,17 @@ namespace Brickalytics.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly IShopifyService _shopifyService;
         private readonly ITokenHelper _tokenHelper;
+        IRoleService _roleService;
 
-        public UserController(ILogger<UserController> logger, IUserService userService, ITokenHelper tokenHelper)
+        public UserController(ILogger<UserController> logger, IUserService userService, IRoleService roleService, IShopifyService shopifyService, ITokenHelper tokenHelper)
         {
             _logger = logger;
             _userService = userService;
             _tokenHelper = tokenHelper;
+            _shopifyService = shopifyService;
+            _roleService= roleService;
         }
 
         [HttpGet]
@@ -41,6 +45,13 @@ namespace Brickalytics.Controllers
         public async Task<User> GetUserById(int id)
         {
             var result = await _userService.GetUserByIdAsync(id);
+            return result;
+        }
+        [HttpGet]
+        [Route("Collections")]
+        public async Task<List<Collection>> GetShopifyCollections(int id)
+        {
+            var result = await _shopifyService.GetCollectionsAsync();
             return result;
         }
         [HttpPost]
@@ -103,6 +114,18 @@ namespace Brickalytics.Controllers
             if(_tokenHelper.IsUserAdmin(accessToken))
             {
                 await _userService.DeleteUserRateAsync(userRate);
+            }
+            throw new UnauthorizedAccessException();
+        }
+        [HttpGet]
+        [Route("Roles")]
+        public async Task<List<Role>> GetRoles()
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
+            {
+                var result = await _roleService.GetRolesAsync();
+                return result;
             }
             throw new UnauthorizedAccessException();
         }
