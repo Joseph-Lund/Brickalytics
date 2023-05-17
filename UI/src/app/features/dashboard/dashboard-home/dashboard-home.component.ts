@@ -6,6 +6,7 @@ import { CurrentUser } from 'src/app/core/models/currentUser';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
+import { ProductsSoldChild } from 'src/app/core/models/productsSoldChild';
 
 export interface Tile {
   cols: number;
@@ -22,7 +23,7 @@ export class DashboardHomeComponent implements OnInit {
 
   currentUser: CurrentUser | null = null;
   rangeForm!: FormGroup;
-  productsSold!: ProductsSoldParent;
+  productsSold: ProductsSoldParent = new ProductsSoldParent(0, [new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1)]);
 
   tiles: Tile[] = [
     { title: 'Tile 1', cols: 1, rows: 1 },

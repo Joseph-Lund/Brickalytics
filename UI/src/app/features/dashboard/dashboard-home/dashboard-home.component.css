@@ -1,7 +1,6 @@
 .grid-container {
   margin: 20px;
 }
-
 .dashboard-card {
   position: absolute;
   top: 15px;
@@ -9,13 +8,27 @@
   right: 15px;
   bottom: 15px;
 }
-
 .more-button {
   position: absolute;
   top: 5px;
   right: 10px;
 }
-
-.dashboard-card-content {
-  text-align: center;
+/* .dashboard-card-content {
+  overflow: auto;
+  height: 300px;
+} */
+.product-title{
+  text-align: left;
+}
+.product-count{
+  background: #e02886;
+  border-radius: 40px;
+  color:white;
+}
+.product-total{
+  color: #7ac953;
+}
+mat-list{
+  flex-grow: 1;
+  overflow: auto;
 }

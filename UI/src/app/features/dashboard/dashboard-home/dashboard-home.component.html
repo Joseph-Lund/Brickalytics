@@ -16,19 +16,42 @@
         </mat-form-field>
 
         <button mat-flat-button color="accent" (click)="getProductsSold()" >Search</button>
-        <mat-grid-list cols="2" rowHeight="350px">
+        <mat-grid-list cols="2">
           <mat-grid-tile [colspan]="1" [rowspan]="1">
             <mat-card class="dashboard-card">
-              <mat-card-header>
+              <mat-card-header class="dashboard-card-header">
                 <mat-card-title>
                   Products Sold
+                </mat-card-title>
+                <mat-card-title>
+                  {{productsSold.productsSoldTotal}}
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content class="dashboard-card-content">
 
-                <div>Card Content Here</div>
+                <mat-list>
+                  <div *ngFor="let product of productsSold.items">
+                    <mat-divider></mat-divider>
+                    <mat-list-item>
+                      <div class="row col-md-12">
+                        <div class="col-md-10 product-title">
+                          {{product.itemName}}
+                        </div>
+                        <div class="col-md-1 product-total">
+                          ${{product.total}}
+                        </div>
+                        <div class="col-md-1 product-count">
+                          {{product.count}}
+                        </div>
+                      </div>
+                    </mat-list-item>
+                  </div>
+                </mat-list>
 
               </mat-card-content>
+              <!-- <mat-card-actions>
+                <button mat-flat-button color="accent" (click)="getProductsSold()" >Show All</button>
+              </mat-card-actions> -->
             </mat-card>
           </mat-grid-tile>
           <mat-grid-tile [colspan]="2" [rowspan]="1">
@@ -43,6 +66,9 @@
                 <div>Card Content Here</div>
 
               </mat-card-content>
+              <!-- <mat-card-actions>
+                <div ></div>(click)="getProductsSold()" >Show All</button>
+              </mat-card-actions> -->
             </mat-card>
           </mat-grid-tile>
         </mat-grid-list>
