@@ -8,10 +8,9 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
 
 export interface Tile {
-  color: string;
   cols: number;
   rows: number;
-  text: string;
+  title: string;
 }
 @Component({
   selector: 'app-dashboard-home',
@@ -26,10 +25,8 @@ export class DashboardHomeComponent implements OnInit {
   productsSold!: ProductsSoldParent;
 
   tiles: Tile[] = [
-    { text: 'Traffic', cols: 1, rows: 1, color: 'lightblue' },
-    { text: 'Products Sold', cols: 1, rows: 1, color: 'lightblue' },
-    { text: 'Date Picker', cols: 1, rows: 1, color: 'lightgreen' },
-    { text: 'Details [prin', cols: 3, rows: 1, color: '#DDBDF1' },
+    { title: 'Tile 1', cols: 1, rows: 1 },
+    { title: 'Tile 2', cols: 2, rows: 1 }
   ];
 
   constructor(private userService: UserService,

@@ -1,17 +1,21 @@
-.single-cards {
-  margin: 20px 0;
+.grid-container {
+  margin: 20px;
 }
 
-.single-card .mat-card-avatar {
-  width: 50px;
-  height: 50px;
+.dashboard-card {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
 }
 
-.single-card .mat-icon {
-  font-size: 55px;
+.more-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }
 
-.projects-card>mat-card-content {
-  max-height: 400px;
-  overflow: auto;
+.dashboard-card-content {
+  text-align: center;
 }
