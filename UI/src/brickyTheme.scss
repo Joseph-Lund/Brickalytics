@@ -1,0 +1,85 @@
+@use '@angular/material' as mat;
+
+//gives base styles to use like default colors
+@include mat.core();
+
+$bricky-yellow-palette: (
+ 50: #fff8df,
+ 100: #ffebaf,
+ 200: #ffdf7b,
+ 300: #ffd342,
+ 400: #ffc800,
+ 500: #ffbe00,
+ 600: #ffb000,
+ 700: #ff9c00,
+ 800: #ff8a00,
+ 900: #ff6800,
+ contrast: (
+    50: black,
+    100: black,
+    200: black,
+    300: black,
+    400: black,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: black,
+    A200: white,
+    A400: white,
+    A700: white,
+  )
+);
+
+$bricky-pink-palette: (
+ 50: #f9e2ee,
+ 100: #f1b7d6,
+ 200: #e988ba,
+ 300: #e3559e,
+ 400: #e02887,
+ 500: #de0070,
+ 600: #cd006c,
+ 700: #b70066,
+ 800: #a10060,
+ 900: #7b0056,
+ contrast: (
+    50: black,
+    100: black,
+    200: black,
+    300: black,
+    400: black,
+    500: white,
+    600: white,
+    700: white,
+    800: black,
+    900: black,
+    A100:black,
+    A200: white,
+    A400: white,
+    A700: white,
+  )
+);
+
+
+$brickalytics-primary: mat.define-palette($bricky-yellow-palette, 400, 200, 500);
+$brickalytics-accent: mat.define-palette($bricky-pink-palette, 400, 200, 500);
+$brickalytics-warn: mat.define-palette(mat.$red-palette);
+
+$brickalytics-theme: mat.define-light-theme((
+  color: (
+    primary: $brickalytics-primary,
+    accent: $brickalytics-accent,
+    warn: $brickalytics-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+ ));
+
+ // Emit theme-dependent styles for common features used across multiple components.
+@include mat.core-theme($brickalytics-theme);
+
+// Emit styles for MatButton based on `$my-theme`. Because the configuration
+// passed to `define-light-theme` omits typography, `button-theme` will not
+// emit any typography styles.
+@include mat.button-theme($brickalytics-theme);
