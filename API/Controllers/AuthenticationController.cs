@@ -48,6 +48,7 @@ namespace Brickalytics.Controllers
                         Id = user.Id,
                         CreatorName = user.CreatorName,
                         Email = user.Email,
+                        IsAdmin = user.RoleId != (int)Roles.User,
                         AccessToken = tokens.AccessToken,
                         RefreshToken = tokens.RefreshToken,
                         RefreshTokenExpiration = tokens.RefreshTokenExpiration

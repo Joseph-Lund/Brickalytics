@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import { CurrentUser } from '../models/currentUser';
 import { Token } from '../models/token';
 import { LoginInfo } from '../models/loginInfo';
-import { LoginResponse } from '../models/loginResponse';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -31,10 +30,7 @@ export class AuthenticationService {
     var loginUrl = this.apiUrl + '/Login';
     var loginModel = new LoginInfo(creatorName, password);
 
-    return this.http.post<LoginResponse>(loginUrl, loginModel).subscribe(response => {
-      this.setCurrentUser(new CurrentUser(response.id, response.creatorName, response.email, response.accessToken, response.refreshToken, response.refreshTokenExpiration));
-      this.router.navigate(['/dashboard']);
-    });
+    return this.http.post<CurrentUser>(loginUrl, loginModel);
   }
 
   logout(): void {
@@ -46,7 +42,8 @@ export class AuthenticationService {
     this.http.put<Token>(logoutUrl, logoutModel).subscribe(token => {
       this.currentUser = null;
       // Remove the user from local storage to clear the authentication state.
-      localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUser');
+        this.router.navigate(['/auth/login']);
     });
   }
 

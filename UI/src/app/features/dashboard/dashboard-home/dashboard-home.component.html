@@ -1,15 +1,24 @@
 <div class="container" fxLayout="row" fxLayoutAlign="center none">
 
   <div fxFlex="95%">
-
     <div class="container" fxLayout="row" fxLayoutAlign="center none">
       <div fxFlex="50%" class="text-center no-records animate">
+        <mat-form-field>
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [formGroup]="rangeForm" [rangePicker]="picker" >
+            <input matStartDate formControlName="start" placeholder="Start date">
+            <input matEndDate formControlName="end" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="rangeForm.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+          <mat-error *ngIf="rangeForm.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+        </mat-form-field>
+
+        <button mat-flat-button color="accent" (click)="getProductsSold()" >Search</button>
         <mat-grid-list cols="3" rowHeight="100px">
-          <mat-grid-tile
-              *ngFor="let tile of tiles"
-              [colspan]="tile.cols"
-              [rowspan]="tile.rows"
-              [style.background]="tile.color">
+          <mat-grid-tile *ngFor="let tile of tiles" [colspan]="tile.cols" [rowspan]="tile.rows"
+            [style.background]="tile.color">
             {{tile.text}}
           </mat-grid-tile>
         </mat-grid-list>

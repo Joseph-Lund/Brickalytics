@@ -5,5 +5,6 @@ namespace Brickalytics.Models
         public int? Id { get; set; }
         public string? CreatorName {get; set;}
         public string? Email { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

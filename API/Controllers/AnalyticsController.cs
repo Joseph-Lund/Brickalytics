@@ -39,7 +39,7 @@ namespace Brickalytics.Controllers
                 throw new Exception();
             }
             var productsSoldTotal = 0;
-            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, dates.StartDate, dates.EndDate);
+            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, dates.Start, dates.End);
             var rates = await _userService.GetUserRatesAsync(user);
             List<ProductSoldChild> items = new List<ProductSoldChild>();
 

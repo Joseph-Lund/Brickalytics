@@ -2,8 +2,8 @@ namespace Brickalytics.Models
 {
     public class Dates
     {
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         
     }
 }
