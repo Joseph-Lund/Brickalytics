@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace Brickalytics.Models
 {
     public class Collection

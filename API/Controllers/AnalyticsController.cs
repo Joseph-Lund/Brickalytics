@@ -32,6 +32,8 @@ namespace Brickalytics.Controllers
         [Route("ProductsSold")]
         public async Task<ProductSoldParent> GetProductsSold(Dates dates)
         {
+            dates.Start = new DateTime(dates.Start.Year, dates.Start.Month, dates.Start.Day, 0, 0, 0);
+            dates.End = new DateTime(dates.End.Year, dates.End.Month, dates.End.Day, 23, 59, 59);
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
             var user = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
             if (user == null)
