@@ -1,7 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Brickalytics.Helpers;
+﻿using Brickalytics.Helpers;
 using Brickalytics.Models;
 using Brickalytics.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -41,25 +38,41 @@ namespace Brickalytics.Controllers
                 throw new Exception();
             }
             var productsSoldTotal = 0;
-            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, dates.Start, dates.End);
+            var productsSoldProfit = (decimal)0.0;
+            
             var rates = await _userService.GetUserRatesAsync(user);
+            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, rates, dates.Start, dates.End);
             List<ProductSoldChild> items = new List<ProductSoldChild>();
 
-            foreach(var order in orders)
+            foreach (var order in orders)
             {
-                productsSoldTotal += order.Count;
-                var total = order.Count * order.Price;
-                var item = new ProductSoldChild()
+                foreach (var rate in rates)
                 {
-                    Count = order.Count, 
-                    ItemName = order.Name,
-                    Total = total
-                };
-                items.Add(item);
+                    if ((int)order.ProductType == rate.ProductTypeId)
+                    {
+                        decimal? total;
+                        if(rate.Rate != null){
+                            total = (order.Count * rate.Rate);
+                        }else {
+                            
+                            total = (order.Count * order.Price) * rate.Percent;
+                        }
+                        productsSoldTotal += order.Count;
+                        productsSoldProfit += (decimal)total;
+                        var item = new ProductSoldChild()
+                        {
+                            Count = order.Count,
+                            ItemName = order.Name,
+                            Total = (decimal)total
+                        };
+                        items.Add(item);
+                    }
+                }
             }
 
             var model = new ProductSoldParent()
             {
+                ProductsSoldProfit = productsSoldProfit,
                 ProductsSoldTotal = productsSoldTotal,
                 Items = items
             };

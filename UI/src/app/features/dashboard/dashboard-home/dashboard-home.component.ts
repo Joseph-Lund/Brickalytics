@@ -8,25 +8,6 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
 import { ProductsSoldChild } from 'src/app/core/models/productsSoldChild';
 
-export interface OrderDetails {
-  orderId: number;
-  date: string;
-  price: number;
-  profit: number;
-}
-
-const DATA: OrderDetails[] = [
-  {orderId: 1, date: 'Hydrogen', price: 2, profit: 1},
-  {orderId: 2, date: 'Helium', price: 2, profit: 1},
-  {orderId: 3, date: 'Lithium', price: 2, profit: 1},
-  {orderId: 4, date: 'Beryllium', price: 2, profit: 1},
-  {orderId: 5, date: 'Boron', price: 2, profit: 1},
-  {orderId: 6, date: 'Carbon', price: 2, profit: 1},
-  {orderId: 7, date: 'Nitrogen', price: 2, profit: 1},
-  {orderId: 8, date: 'Oxygen', price: 2, profit: 1},
-  {orderId: 9, date: 'Fluorine', price: 2, profit: 1},
-  {orderId: 10, date: 'Neon', price: 2, profit: 1},
-];
 @Component({
   selector: 'app-dashboard-home',
   templateUrl: './dashboard-home.component.html',
@@ -37,9 +18,8 @@ export class DashboardHomeComponent implements OnInit {
 
   currentUser: CurrentUser | null = null;
   rangeForm!: FormGroup;
-  productsSold: ProductsSoldParent = new ProductsSoldParent(0, [new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1),new ProductsSoldChild('Test', 55, 1)]);
-  displayedColumns: string[] = ['orderId', 'date', 'price', 'profit'];
-  dataSource = DATA;
+  productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
+
   constructor(private userService: UserService,
     private authService: AuthenticationService,
     private dashboardService: DashboardService,

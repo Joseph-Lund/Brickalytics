@@ -4,13 +4,13 @@ export class User {
   email: string | null;
   active: boolean;
   roleId: number;
-  collectionId: number | null;
+  collectionId: number;
 
   constructor(
     id: number | null,
     active: boolean,
     roleId: number,
-    collectionId: number | null,
+    collectionId: number,
     creatorName: string,
     email: string | null
   ) {

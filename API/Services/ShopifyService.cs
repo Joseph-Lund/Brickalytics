@@ -50,20 +50,18 @@ namespace Brickalytics.Services
             })).ToList();
             return collections;
         }
-        public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, DateTime? startDate, DateTime? endDate)
+        public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, List<UserRate> rates, DateTime? startDate, DateTime? endDate)
         {
             //TODO: If user is not normal user, then get all the users collection ids
-            if (user.CollectionId == null)
-            {
-                user.CollectionId = 199995129965;
-            }
+            // if (user.CollectionId == 0)
+            // {
+            //     user.CollectionId = 199995129965;
+            // }
 
-            var products = await GetCollectionsProductsAsync((long)user.CollectionId, startDate, endDate);
-
-            var analytics = products.Select(analytic => analytic.Value).ToList();
-            return analytics;
+            var products = await GetCollectionsProductsAsync((long)user.CollectionId, rates, startDate, endDate);
+            return products;
         }
-        private async Task<IDictionary<long, Order>> GetProductsSoldCountAsync(IDictionary<long, Order> analyticsDict, DateTime? startDate, DateTime? endDate)
+        private async Task<List<Order>> GetProductsSoldCountAsync(List<Order> analyticsDict, DateTime? startDate, DateTime? endDate)
         {
             var ordersInfo = new List<Order>();
 
@@ -95,50 +93,73 @@ namespace Brickalytics.Services
             }
             return allOrders;
         }
-        private async Task<IDictionary<long, Order>> GetCollectionsProductsAsync(long collectionId, DateTime? startDate, DateTime? endDate)
+        private async Task<List<Order>> GetCollectionsProductsAsync(long collectionId, List<UserRate> rates, DateTime? startDate, DateTime? endDate)
         {
             var collectionService = CreateService<ShopifySharp.CollectionService>();
+            var productVariantService = CreateService<ShopifySharp.ProductVariantService>();
             var collections = await collectionService.ListProductsAsync(collectionId);
-            IDictionary<long, Order> collectionProducts = (collections).Items
-            .ToDictionary(
-                product => (long)product.Id!,
-                product => new Order {  
-                    ProductId = (long)product.Id!, 
-                    Name = product.Title, 
-                    ProductType = (ProductTypes)GetProductTypeId(product.ProductType)
+            List<Order> collectionProducts = new List<Order>();
+
+            var productTypeIdsWithNoSubs = rates
+                .Where(rate => rate.ProductSubTypeId == 0)
+                .Select(rate => rate.ProductTypeId)
+                .Distinct()
+                .ToList();
+
+            foreach (var product in collections.Items)
+            {
+                // has a rate
+                bool productTypeIdExists = rates.Any(rate => (rate.ProductTypeId == GetProductTypeId(product.ProductType)));
+                bool productHasNoSubs = productTypeIdsWithNoSubs.Contains(GetProductTypeId(product.ProductType));
+
+                if (productTypeIdExists)
+                {
+                    if (!productHasNoSubs)
+                    {
+                        var variants = (await productVariantService.ListAsync((long)product.Id)).Items;
+                        if (variants.Count() > 0)
+                        {
+                            foreach (var variaint in variants)
+                            {
+                                collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = GetProductSubTypeId(variaint.Option1), Rate = GetRate(rates, GetProductTypeId(product.ProductType), GetProductSubTypeId(variaint.Option1)) });
+
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = 0, Rate = GetRate(rates, GetProductTypeId(product.ProductType), 0) });
+                    }
                 }
-            );
+            }
             collectionProducts = await GetProductsSoldCountAsync(collectionProducts, startDate, endDate);
             return collectionProducts;
         }
-        private IDictionary<long, Order> GetOrderCountsDict(IEnumerable<ShopifySharp.Order> orders, IDictionary<long, Order> analyticsDict)
+        private List<Order> GetOrderCountsDict(IEnumerable<ShopifySharp.Order> orders, List<Order> analytics)
         {
-            var productIds = analyticsDict.Keys.ToList();
             foreach (var order in orders)
             {
                 foreach (var lineItem in order.LineItems)
                 {
                     if (lineItem.ProductId != null)
                     {
-                        if (productIds.Contains((long)lineItem.ProductId!))
+                        foreach (var analytic in analytics)
                         {
-                            long productId = (long)lineItem.ProductId!;
-                            decimal price = (decimal)lineItem.Price!;
-                            if (analyticsDict.ContainsKey(productId))
+                            if (analytic.ProductId == (long)lineItem.ProductId!)
                             {
-                                analyticsDict[productId].Price = price;
-                                analyticsDict[productId].Count++;
-                            }
-                            else
-                            {
-                                analyticsDict.Add(productId, new Order() { ProductId = productId, Count = 1, Price = price });
+                                long productId = (long)lineItem.ProductId;
+                                decimal price = (decimal)lineItem.Price!;
+                                analytic.Price = price;
+                                analytic.Rate = analytic.Price;
+                                analytic.Count++;
                             }
                         }
                     }
                 }
             }
 
-            return analyticsDict;
+            return analytics;
 
         }
         private T CreateService<T>()
@@ -158,6 +179,8 @@ namespace Brickalytics.Services
                     return (T)(object)new ShopifySharp.SmartCollectionService(url, accessToken);
                 case Type t when t == typeof(ShopifySharp.CollectionService):
                     return (T)(object)new ShopifySharp.CollectionService(url, accessToken);
+                case Type t when t == typeof(ShopifySharp.ProductVariantService):
+                    return (T)(object)new ShopifySharp.ProductVariantService(url, accessToken);
                 default:
                     throw new ArgumentException("Unsupported service type");
             }
@@ -196,6 +219,33 @@ namespace Brickalytics.Services
             {
                 return 0;
             }
+        }
+
+        private int GetProductSubTypeId(string name)
+        {
+            switch (name)
+            {
+                case "8x10 in.":
+                    return 19;
+                case "11x14 in.":
+                    return 20;
+                case "18x24 in.":
+                    return 21;
+                case "24x36 in.":
+                    return 22;
+                default:
+                    return 0;
+            }
+        }
+
+        private decimal GetRate(List<UserRate> rates, int productTypeId, int productSubTypeId)
+        {
+            foreach(var rate in rates){
+                if(rate.ProductTypeId == productTypeId && rate.ProductTypeId == productSubTypeId){
+                    return (decimal)rate.Rate;
+                }
+            }
+            return (decimal)0.0;
         }
 
         public void Dispose()

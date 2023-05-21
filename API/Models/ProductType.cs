@@ -8,9 +8,9 @@ namespace Brickalytics.Models
     public enum ProductTypes
     {
         Tee = 1,
-        Print = 2,
-        Hoodie = 3,
-        Stricker = 4,
-        BodyPillow = 5
+        Hoodie = 2,
+        Print = 3,
+        Strickers = 4,
+        Pillow = 5
     }
 }

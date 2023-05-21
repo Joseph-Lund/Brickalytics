@@ -21,10 +21,10 @@
       </button>
       <mat-menu #userMenu="matMenu" xPosition="before" yPosition="above" [overlapTrigger]="false">
 
-        <!-- <a mat-menu-item [routerLink]="['/account/profile']">
+        <a mat-menu-item (click)="changePassword()">
           <mat-icon>person</mat-icon>
-          <span>Account</span>
-        </a> -->
+          <span>Change Password</span>
+        </a>
         <a mat-menu-item (click)="logout()">
           <mat-icon>exit_to_app</mat-icon>
           <span>Log out</span>
@@ -34,7 +34,7 @@
 
     </mat-toolbar>
 
-    <mat-sidenav-container class="navbar-sidenav-container" [hidden]="!isAdmin">
+    <mat-sidenav-container class="navbar-sidenav-container">
       <!-- Side nav -->
       <mat-sidenav #snav [opened]="false" [fixedInViewport]="true" fixedTopGap="64" class="sidenav">
 
@@ -59,7 +59,7 @@
       </mat-sidenav>
 
 <!-- Main content -->
-<mat-sidenav-content class="sidenav-content"(show)="isAdmin">
+<mat-sidenav-content class="sidenav-content">
 
   <div class="progress-bar-container">
     <mat-progress-bar color="accent" mode="indeterminate" *ngIf="spinnerService.visibility | async">

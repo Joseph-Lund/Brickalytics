@@ -16,31 +16,58 @@
         </mat-form-field>
 
         <button mat-flat-button color="accent" (click)="getProductsSold()" >Search</button>
-        <mat-grid-list cols="2">
+        <mat-grid-list cols="1">
           <mat-grid-tile [colspan]="1" [rowspan]="1">
             <mat-card class="dashboard-card">
               <mat-card-header class="dashboard-card-header">
-                <mat-card-title>
-                  Products Sold
-                </mat-card-title>
-                <mat-card-title>
-                  {{productsSold.productsSoldTotal}}
-                </mat-card-title>
+                <div class="col-md-6">
+                  <mat-card-title>
+                    <b>Products Sold</b>
+                  </mat-card-title>
+                  <mat-card-title>
+                    {{productsSold.productsSoldTotal}}
+                  </mat-card-title>
+                </div>
+                <div class="col-md-6">
+                  <mat-card-title>
+                    <b>Total</b>
+                  </mat-card-title>
+                  <mat-card-title class="product-total">
+                    ${{productsSold.productsSoldProfit}}
+                  </mat-card-title>
+
+                </div>
               </mat-card-header>
               <mat-card-content class="dashboard-card-content">
 
                 <mat-list>
+                  <div>
+                    <mat-divider></mat-divider>
+                    <mat-list-item>
+                      <div class="row col-md-12">
+                        <div class="col-md-9 product-title">
+                          <b>Product Name</b>
+                        </div>
+                        <div class="col-md-2">
+                          <b>Profit Share</b>
+                        </div>
+                        <div class="col-md-1">
+                          <b>Count</b>
+                        </div>
+                      </div>
+                    </mat-list-item>
+                  </div>
                   <div *ngFor="let product of productsSold.items">
                     <mat-divider></mat-divider>
                     <mat-list-item>
                       <div class="row col-md-12">
-                        <div class="col-md-10 product-title">
+                        <div class="col-md-9 product-title">
                           {{product.itemName}}
                         </div>
-                        <div class="col-md-1 product-total">
+                        <div class="col-md-2 product-total">
                           ${{product.total}}
                         </div>
-                        <div class="col-md-1 product-count">
+                        <div class="col-md-1">
                           {{product.count}}
                         </div>
                       </div>
@@ -49,53 +76,9 @@
                 </mat-list>
 
               </mat-card-content>
-              <mat-card-actions>
+              <!-- <mat-card-actions>
                 <button mat-flat-button color="accent" (click)="getProductsSold()" >Show All</button>
-              </mat-card-actions>
-            </mat-card>
-          </mat-grid-tile>
-          <mat-grid-tile [colspan]="2" [rowspan]="1">
-            <mat-card class="dashboard-card">
-              <mat-card-header>
-                <mat-card-title>
-                  Details
-                </mat-card-title>
-              </mat-card-header>
-              <mat-card-content class="dashboard-card-content">
-
-                <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
-                  <!--- Note that these columns can be defined in any order.
-                        The actual rendered columns are set as a property on the row definition" -->
-
-                  <!-- Position Column -->
-                  <ng-container matColumnDef="orderId">
-                    <th mat-header-cell *matHeaderCellDef> OrderId </th>
-                    <td mat-cell *matCellDef="let element"> {{element.orderId}} </td>
-                  </ng-container>
-
-                  <!-- Name Column -->
-                  <ng-container matColumnDef="date">
-                    <th mat-header-cell *matHeaderCellDef> Date </th>
-                    <td mat-cell *matCellDef="let element"> {{element.date}} </td>
-                  </ng-container>
-
-                  <!-- Weight Column -->
-                  <ng-container matColumnDef="price">
-                    <th mat-header-cell *matHeaderCellDef> Cost </th>
-                    <td mat-cell *matCellDef="let element"> ${{element.price}} </td>
-                  </ng-container>
-
-                  <!-- Symbol Column -->
-                  <ng-container matColumnDef="profit">
-                    <th mat-header-cell *matHeaderCellDef> Profit Share </th>
-                    <td mat-cell *matCellDef="let element"> ${{element.profit}} </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-              </mat-card-content>
+              </mat-card-actions> -->
             </mat-card>
           </mat-grid-tile>
         </mat-grid-list>

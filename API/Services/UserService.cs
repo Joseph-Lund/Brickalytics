@@ -31,7 +31,8 @@ namespace Brickalytics.Services
         public async Task<List<UserRate>> GetUserRatesAsync(User user)
         {
             var parameters = new DynamicParameters();
-            parameters.Add("Id", 4);
+
+            parameters.Add("Id", user.Id);
 
             var result = await Task.FromResult(_dapper.GetAll<UserRate>("GetUserRatesById", parameters));
             return result;

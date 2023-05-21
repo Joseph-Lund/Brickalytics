@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { GenericType } from 'src/app/core/models/genericType';
@@ -8,6 +9,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { ProductSubTypeService } from 'src/app/core/services/productSubType.service';
 import { ProductTypeService } from 'src/app/core/services/productType.service';
 import { UserService } from 'src/app/core/services/user.service';
+import { UserModal } from 'src/app/features/users/userModal/user-modal.component';
 
 @Component({
   selector: 'app-user-list',
@@ -36,7 +38,8 @@ export class UserListComponent implements OnInit {
     private productTypeService: ProductTypeService,
     private productSubTypeService: ProductSubTypeService,
     private titleService: Title,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -125,16 +128,33 @@ export class UserListComponent implements OnInit {
     }
     return "None";
   }
-  getCollection(id:number | null){
-    for(var collection of this.collectionList){
-      if(collection.id == id){
-        return collection.name;
+  getCollection(id:number){
+    if(id){
+      for(var collection of this.collectionList){
+        if(collection.id == id){
+          return collection.name;
+        }
       }
     }
     return "None";
   }
   openUserModal(user: User | null = null){
 
+    if(!user){
+      user = new User(null, true, 2, 0, '', null);
+    }
+
+    const dialogRef = this.dialog.open(UserModal, {
+      data: {user: user, roleList: this.roleList, collectionList: this.collectionList}
+    });
+
+    dialogRef.afterClosed().subscribe(_user => {
+       //TODO: Make it so I dont need to call the api again to refresh the results.
+       //      If new user added, add to the list and sort, if it already exists
+       //      then update the item in the list.
+
+       this.getUsersList();
+    });
   }
 
   // handlePageEvent(e: PageEvent) {

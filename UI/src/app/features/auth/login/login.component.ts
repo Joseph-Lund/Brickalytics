@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
         },
         err => {
           this.loading = false;
-        });;
+        });
     }
 
     // resetPassword() {
