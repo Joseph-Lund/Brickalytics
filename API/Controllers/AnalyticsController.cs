@@ -39,33 +39,39 @@ namespace Brickalytics.Controllers
             }
             var productsSoldTotal = 0;
             var productsSoldProfit = (decimal)0.0;
-            
+
             var rates = await _userService.GetUserRatesAsync(user);
             var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, rates, dates.Start, dates.End);
             List<ProductSoldChild> items = new List<ProductSoldChild>();
 
             foreach (var order in orders)
             {
-                foreach (var rate in rates)
+                if (order.Count > 0)
                 {
-                    if ((int)order.ProductType == rate.ProductTypeId)
+                    foreach (var rate in rates)
                     {
-                        decimal? total;
-                        if(rate.Rate != null){
-                            total = (order.Count * rate.Rate);
-                        }else {
-                            
-                            total = (order.Count * order.Price) * rate.Percent;
-                        }
-                        productsSoldTotal += order.Count;
-                        productsSoldProfit += (decimal)total;
-                        var item = new ProductSoldChild()
+                        if ((int)order.ProductType == rate.ProductTypeId)
                         {
-                            Count = order.Count,
-                            ItemName = order.Name,
-                            Total = (decimal)total
-                        };
-                        items.Add(item);
+                            decimal? total;
+                            if (rate.Rate != null)
+                            {
+                                total = (order.Count * rate.Rate);
+                            }
+                            else
+                            {
+
+                                total = (order.Count * order.Price) * rate.Percent;
+                            }
+                            productsSoldTotal += order.Count;
+                            productsSoldProfit += (decimal)total;
+                            var item = new ProductSoldChild()
+                            {
+                                Count = order.Count,
+                                ItemName = order.Name,
+                                Total = (decimal)total
+                            };
+                            items.Add(item);
+                        }
                     }
                 }
             }

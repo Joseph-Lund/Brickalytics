@@ -110,27 +110,27 @@ namespace Brickalytics.Services
             {
                 // has a rate
                 bool productTypeIdExists = rates.Any(rate => (rate.ProductTypeId == GetProductTypeId(product.ProductType)));
-                bool productHasNoSubs = productTypeIdsWithNoSubs.Contains(GetProductTypeId(product.ProductType));
+                // bool productHasNoSubs = productTypeIdsWithNoSubs.Contains(GetProductTypeId(product.ProductType));
 
                 if (productTypeIdExists)
                 {
-                    if (!productHasNoSubs)
-                    {
-                        var variants = (await productVariantService.ListAsync((long)product.Id)).Items;
-                        if (variants.Count() > 0)
-                        {
-                            foreach (var variaint in variants)
-                            {
-                                collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = GetProductSubTypeId(variaint.Option1), Rate = GetRate(rates, GetProductTypeId(product.ProductType), GetProductSubTypeId(variaint.Option1)) });
+                    // if (!productHasNoSubs)
+                    // {
+                    //     var variants = (await productVariantService.ListAsync((long)product.Id)).Items;
+                    //     if (variants.Count() > 0)
+                    //     {
+                    //         foreach (var variaint in variants)
+                    //         {
+                    //             collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = GetProductSubTypeId(variaint.Option1), Rate = GetRate(rates, GetProductTypeId(product.ProductType), GetProductSubTypeId(variaint.Option1)) });
 
-                            }
+                    //         }
 
-                        }
-                    }
-                    else
-                    {
+                    //     }
+                    // }
+                    // else
+                    // {
                         collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = 0, Rate = GetRate(rates, GetProductTypeId(product.ProductType), 0) });
-                    }
+                    // }
                 }
             }
             collectionProducts = await GetProductsSoldCountAsync(collectionProducts, startDate, endDate);
@@ -148,10 +148,55 @@ namespace Brickalytics.Services
                         {
                             if (analytic.ProductId == (long)lineItem.ProductId!)
                             {
-                                long productId = (long)lineItem.ProductId;
+                                var priceTotal = 0.0;
+                                // Shammy
+                                if((long)lineItem.VariantId == 44364937789755){
+                                    priceTotal = 25.00;
+                                }else if ((long)lineItem.VariantId == 44364926386491){
+                                    
+                                    priceTotal = 25.00;
+                                }else if ((long)lineItem.VariantId == 44364926386491){
+                                    
+                                    priceTotal = 25.00;
+                                }else if ((long)lineItem.VariantId == 44364945162555){
+                                    
+                                    priceTotal = 57.50;
+                                }else if ((long)lineItem.VariantId == 44364945031483){
+                                    
+                                    priceTotal = 55.00;
+                                }
+                                // Dicehammer
+                                else if ((long)lineItem.VariantId == 45192255340859){
+                                    
+                                    priceTotal = 55.00;
+                                }
+                                else if ((long)lineItem.VariantId == 45192422588731){
+                                    
+                                    priceTotal = 25.00;
+                                }
+                                else if ((long)lineItem.VariantId == 45192495169851){
+                                    
+                                    priceTotal = 25.00;
+                                }
+                                else if ((long)lineItem.VariantId == 45192422687035){
+                                    
+                                    priceTotal = 25.00;
+                                }
+                                else if ((long)lineItem.VariantId == 5308663628091){
+                                    
+                                    priceTotal = 25.00;
+                                }
+                                else if ((long)lineItem.VariantId == 45192422555963){
+                                    
+                                    priceTotal = 25.00;
+                                }
+                                else if ((long)lineItem.VariantId == 44364926124347){
+                                    
+                                    priceTotal = 25.00;
+                                }
                                 decimal price = (decimal)lineItem.Price!;
-                                analytic.Price = price;
-                                analytic.Rate = analytic.Price;
+                                analytic.Price = priceTotal  ==  0.0 ? (decimal)lineItem.Price : (decimal)priceTotal;
+                                analytic.Rate = analytic.Rate;
                                 analytic.Count++;
                             }
                         }
