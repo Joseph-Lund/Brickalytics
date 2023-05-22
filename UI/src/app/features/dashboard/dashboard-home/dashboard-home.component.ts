@@ -120,7 +120,7 @@ export class DashboardHomeComponent implements OnInit {
       end: new FormControl(new Date(sunday.setUTCHours(23, 59, 59, 999)), Validators.required)
     });
     this.creatorForm = new FormGroup({
-      id: new FormControl(this.creators[0].id ? this.creators[0].id : 0, Validators.required)
+      id: new FormControl(this.creators[0]?.id ? this.creators[0].id : 0, Validators.required)
     });
 
     this.getProductsSold();
