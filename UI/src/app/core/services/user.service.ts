@@ -16,6 +16,10 @@ export class UserService {
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
   }
+  getCreatorNames(): Observable<GenericType[]> {
+    const url = `${this.apiUrl}/Names`;
+    return this.http.get<GenericType[]>(url);
+  }
   getRoles(): Observable<GenericType[]> {
     const url = `${this.apiUrl}/Roles`;
     return this.http.get<GenericType[]>(url);

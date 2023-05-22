@@ -18,7 +18,12 @@ export class DashboardService {
   getProductsSold(start: Date, end: Date) {
     var getProductsSoldUrl = this.apiUrl + '/ProductsSold';
     var getProductsSoldModel = new Dates(start, end);
-    console.log("getProductsSoldModel", getProductsSoldModel);
+    return this.http.post<ProductsSoldParent>(getProductsSoldUrl, getProductsSoldModel);
+  }
+
+  getProductsSoldAdmin(start: Date, end: Date, userId: number) {
+    var getProductsSoldUrl = this.apiUrl + '/ProductsSoldAdmin';
+    var getProductsSoldModel = new Dates(start, end, userId);
     return this.http.post<ProductsSoldParent>(getProductsSoldUrl, getProductsSoldModel);
   }
 }

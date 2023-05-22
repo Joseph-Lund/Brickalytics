@@ -84,6 +84,65 @@ namespace Brickalytics.Controllers
             };
             return model;
         }
+        [HttpPost]
+        [Route("ProductsSoldAdmin")]
+        public async Task<ProductSoldParent> GetProductsSoldAdmin(Dates dates)
+        {
+            dates.Start = new DateTime(dates.Start.Year, dates.Start.Month, dates.Start.Day, 0, 0, 0);
+            dates.End = new DateTime(dates.End.Year, dates.End.Month, dates.End.Day, 23, 59, 59);
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var user = await _userService.GetUserByIdAsync((int)dates.Id);
+            if (user == null)
+            {
+                throw new Exception();
+            }
+            var productsSoldTotal = 0;
+            var productsSoldProfit = (decimal)0.0;
+
+            var rates = await _userService.GetUserRatesAsync(user);
+            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, rates, dates.Start, dates.End);
+            List<ProductSoldChild> items = new List<ProductSoldChild>();
+
+            foreach (var order in orders)
+            {
+                if (order.Count > 0)
+                {
+                    foreach (var rate in rates)
+                    {
+                        if ((int)order.ProductType == rate.ProductTypeId)
+                        {
+                            decimal? total;
+                            if (rate.Rate != null)
+                            {
+                                total = (order.Count * rate.Rate);
+                            }
+                            else
+                            {
+
+                                total = (order.Count * order.Price) * rate.Percent;
+                            }
+                            productsSoldTotal += order.Count;
+                            productsSoldProfit += (decimal)total;
+                            var item = new ProductSoldChild()
+                            {
+                                Count = order.Count,
+                                ItemName = order.Name,
+                                Total = (decimal)total
+                            };
+                            items.Add(item);
+                        }
+                    }
+                }
+            }
+
+            var model = new ProductSoldParent()
+            {
+                ProductsSoldProfit = productsSoldProfit,
+                ProductsSoldTotal = productsSoldTotal,
+                Items = items
+            };
+            return model;
+        }
         // [HttpGet]
         // [Route("Details/{userId:int}")]
         // public async Task<ProductSoldDetail> GetDetails(int userId)

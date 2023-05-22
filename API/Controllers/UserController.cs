@@ -30,6 +30,19 @@ namespace Brickalytics.Controllers
         }
 
         [HttpGet]
+        [Route("Names")]
+        public async Task<List<CreatorNameListItem>> GetCreatorNames()
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
+            {   
+                List<User> users = await GetUsers();
+                List<CreatorNameListItem> result = users.Where(user => user.CollectionId != 0).Select(user => new CreatorNameListItem(){ Name = user.CreatorName, Id = user.Id}).ToList();
+                return result;
+            }
+            throw new UnauthorizedAccessException();
+        }
+        [HttpGet]
         public async Task<List<User>> GetUsers()
         {
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
