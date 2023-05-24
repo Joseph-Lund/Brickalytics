@@ -28,6 +28,13 @@ namespace Brickalytics.Services
             var result = await Task.FromResult(_dapper.Get<User>("GetUserById", parameters));
             return result;
         }
+        public async Task<List<Payment>> GetUserPaymentsAsync(int userId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("UserId", userId);
+            var result = await Task.FromResult(_dapper.GetAll<Payment>("GetUserPaymentsByUserId", parameters));
+            return result;
+        }
         public async Task<List<UserRate>> GetUserRatesAsync(User user)
         {
             var parameters = new DynamicParameters();
@@ -57,6 +64,19 @@ namespace Brickalytics.Services
             parameters.Add("RoleId", user.RoleId);
 
             await Task.FromResult(_dapper.Insert<User>("AddUser", parameters));
+
+            var id = parameters.Get<int>("Id"); 
+            return id;
+        }
+        public async Task<int> AddUserPaymentAsync(Payment payment)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", DbType.Int32, direction:ParameterDirection.Output);
+            parameters.Add("UserId", payment.UserId);
+            parameters.Add("PaymentAmount", payment.PaymentAmount);
+            parameters.Add("PaymentDate", payment.PaymentDate);
+
+            await Task.FromResult(_dapper.Insert<Payment>("AddPayment", parameters));
 
             var id = parameters.Get<int>("Id"); 
             return id;

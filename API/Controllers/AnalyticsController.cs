@@ -91,8 +91,9 @@ namespace Brickalytics.Controllers
             dates.Start = new DateTime(dates.Start.Year, dates.Start.Month, dates.Start.Day, 0, 0, 0);
             dates.End = new DateTime(dates.End.Year, dates.End.Month, dates.End.Day, 23, 59, 59);
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
             var user = await _userService.GetUserByIdAsync((int)dates.Id);
-            if (user == null)
+            if (user == null || admin.IsAdmin != true)
             {
                 throw new Exception();
             }
@@ -143,40 +144,39 @@ namespace Brickalytics.Controllers
             };
             return model;
         }
-        // [HttpGet]
-        // [Route("Details/{userId:int}")]
-        // public async Task<ProductSoldDetail> GetDetails(int userId)
-        // {
-        //     var user = await _userService.GetUserByIdAsync(userId);
-        //     if (user == null)
-        //     {
-        //         throw new Exception();
-        //     }
-        //     var productsSoldTotal = 0;
-        //     var orders = await _shopifyService.GetCreatorsAnalytics(user);
-        //     var rates = await _userService.GetUserRatesByIdAsync(user.Id);
-        //     // List<ProductSoldChild> items = new List<ProductSoldChild>();
+        [HttpGet]
+        [Route("Payment/{userId:int}")]
+        public async Task<List<Payment>> GetPayments(int userId)
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null || admin.IsAdmin != true)
+            {
+                throw new Exception();
+            }
+            if (admin.IsAdmin != true)
+            {
+                return await _userService.GetUserPaymentsAsync(admin.Id);
+            }
 
-        //     foreach(var order in orders)
-        //     {
-        //         productsSoldTotal += order.Count;
-        //         var total = order.Count * order.Price;
-        //         var item = new ProductSoldChild()
-        //         {
-        //             Count = order.Count, 
-        //             ItemName = order.Name, 
-        //             Price = order.Price,
-        //             Total = total
-        //         };
-        //         items.Add(item);
-        //     }
+            return await _userService.GetUserPaymentsAsync(userId);
+        }
+        [HttpPost]
+        [Route("Payment")]
+        public async Task<int> AddPayment(Payment payment)
+        {
 
-        //     // var model = new ProductSoldParent()
-        //     // {
-        //     //     ProductsSoldTotal = productsSoldTotal,
-        //     //     Items = items
-        //     // };
-        //     return model;
-        // }
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
+            var user = await _userService.GetUserByIdAsync((int)payment.UserId);
+            if (user == null || admin.IsAdmin != true)
+            {
+                throw new Exception();
+            }
+
+            var payments = await _userService.AddUserPaymentAsync(payment);
+            return payments;
+        }
     }
 }
