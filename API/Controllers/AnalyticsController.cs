@@ -52,15 +52,15 @@ namespace Brickalytics.Controllers
                     {
                         if ((int)order.ProductType == rate.ProductTypeId)
                         {
-                            decimal? total;
+                            decimal total = (decimal)0.0;
                             if (rate.Rate != null)
                             {
-                                total = (order.Count * rate.Rate);
+                                total = (order.Count * Convert.ToDecimal(rate.Rate));
                             }
                             else
                             {
 
-                                total = (order.Count * order.Price) * rate.Percent;
+                                total = (order.Count * order.Price) * Convert.ToDecimal(rate.Percent);
                             }
                             productsSoldTotal += order.Count;
                             productsSoldProfit += (decimal)total;
@@ -92,7 +92,7 @@ namespace Brickalytics.Controllers
             dates.End = new DateTime(dates.End.Year, dates.End.Month, dates.End.Day, 23, 59, 59);
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
             var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
-            var user = await _userService.GetUserByIdAsync((int)dates.Id);
+            var user = await _userService.GetUserByIdAsync(Convert.ToInt32(dates.Id));
             if (user == null || admin.IsAdmin != true)
             {
                 throw new Exception();
@@ -123,12 +123,12 @@ namespace Brickalytics.Controllers
                                 total = (order.Count * order.Price) * rate.Percent;
                             }
                             productsSoldTotal += order.Count;
-                            productsSoldProfit += (decimal)total;
+                            productsSoldProfit += Convert.ToDecimal(total);
                             var item = new ProductSoldChild()
                             {
                                 Count = order.Count,
                                 ItemName = order.Name,
-                                Total = (decimal)total
+                                Total = Convert.ToDecimal(total)
                             };
                             items.Add(item);
                         }
@@ -169,7 +169,7 @@ namespace Brickalytics.Controllers
 
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
             var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
-            var user = await _userService.GetUserByIdAsync((int)payment.UserId);
+            var user = await _userService.GetUserByIdAsync(Convert.ToInt32(payment.UserId));
             if (user == null || admin.IsAdmin != true)
             {
                 throw new Exception();

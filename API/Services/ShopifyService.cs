@@ -149,48 +149,49 @@ namespace Brickalytics.Services
                             if (analytic.ProductId == (long)lineItem.ProductId!)
                             {
                                 var priceTotal = 0.0;
+                                var variant = (long)Convert.ToDouble(lineItem.VariantId);
                                 // Shammy
-                                if((long)lineItem.VariantId == 44364937789755){
+                                if(variant == 44364937789755){
                                     priceTotal = 25.00;
-                                }else if ((long)lineItem.VariantId == 44364926386491){
+                                }else if (variant == 44364926386491){
                                     
                                     priceTotal = 25.00;
-                                }else if ((long)lineItem.VariantId == 44364926386491){
+                                }else if (variant == 44364926386491){
                                     
                                     priceTotal = 25.00;
-                                }else if ((long)lineItem.VariantId == 44364945162555){
+                                }else if (variant == 44364945162555){
                                     
                                     priceTotal = 57.50;
-                                }else if ((long)lineItem.VariantId == 44364945031483){
+                                }else if (variant == 44364945031483){
                                     
                                     priceTotal = 55.00;
                                 }
                                 // Dicehammer
-                                else if ((long)lineItem.VariantId == 45192255340859){
+                                else if (variant== 45192255340859){
                                     
                                     priceTotal = 55.00;
                                 }
-                                else if ((long)lineItem.VariantId == 45192422588731){
+                                else if (variant == 45192422588731){
                                     
                                     priceTotal = 25.00;
                                 }
-                                else if ((long)lineItem.VariantId == 45192495169851){
+                                else if (variant == 45192495169851){
                                     
                                     priceTotal = 25.00;
                                 }
-                                else if ((long)lineItem.VariantId == 45192422687035){
+                                else if (variant == 45192422687035){
                                     
                                     priceTotal = 25.00;
                                 }
-                                else if ((long)lineItem.VariantId == 5308663628091){
+                                else if (variant == 5308663628091){
                                     
                                     priceTotal = 25.00;
                                 }
-                                else if ((long)lineItem.VariantId == 45192422555963){
+                                else if (variant == 45192422555963){
                                     
                                     priceTotal = 25.00;
                                 }
-                                else if ((long)lineItem.VariantId == 44364926124347){
+                                else if (variant == 44364926124347){
                                     
                                     priceTotal = 25.00;
                                 }
@@ -287,7 +288,7 @@ namespace Brickalytics.Services
         {
             foreach(var rate in rates){
                 if(rate.ProductTypeId == productTypeId && rate.ProductTypeId == productSubTypeId){
-                    return (decimal)rate.Rate;
+                    return Convert.ToDecimal(rate.Rate);
                 }
             }
             return (decimal)0.0;
