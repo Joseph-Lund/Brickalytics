@@ -24,6 +24,7 @@ export class DashboardHomeComponent implements OnInit {
   creators: GenericType[] = [];
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
+  breakpoint = 0;
 
   constructor(private userService: UserService,
     private authService: AuthenticationService,
@@ -45,6 +46,7 @@ export class DashboardHomeComponent implements OnInit {
     console.log("this.currentUser", this.currentUser);
     console.log("this.isAdmin", this.isAdmin);
     this.getCreators();
+    this.onResizeInit(window.innerWidth);
   }
 
   getUserById(id: number) {
@@ -136,5 +138,20 @@ export class DashboardHomeComponent implements OnInit {
     var today = new Date();
     var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
     return lastWeek;
+  }
+  onResizeInit(width:number){
+    console.log("width", width);
+      if (width < 1400) { return 4};
+      if (width < 1200) { return 3};
+      if (width < 992) { return 2};
+      if (width < 550) { return 1};
+      return 5;
+  }
+  onResize(event:any) {
+      if  (event.target.innerWidth >= 1400) { this.breakpoint = 5};
+      if (event.target.innerWidth < 1400) { this.breakpoint = 4};
+      if (event.target.innerWidth < 1200) { this.breakpoint = 3};
+      if (event.target.innerWidth < 992) { this.breakpoint = 2};
+      if (event.target.innerWidth < 550) { this.breakpoint = 1};
   }
 }
