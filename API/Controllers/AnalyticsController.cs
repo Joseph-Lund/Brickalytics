@@ -37,11 +37,66 @@ namespace Brickalytics.Controllers
             {
                 throw new Exception();
             }
+            return await GetProductsSold(user, dates.Start, dates.End);
+        }
+        [HttpPost]
+        [Route("ProductsSoldAdmin")]
+        public async Task<ProductSoldParent> GetProductsSoldAdmin(Dates dates)
+        {
+            dates.Start = new DateTime(dates.Start.Year, dates.Start.Month, dates.Start.Day, 0, 0, 0);
+            dates.End = new DateTime(dates.End.Year, dates.End.Month, dates.End.Day, 23, 59, 59);
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
+            var user = await _userService.GetUserByIdAsync(Convert.ToInt32(dates.Id));
+            if (user == null || admin.IsAdmin != true)
+            {
+                throw new Exception();
+            }
+           
+           return await GetProductsSold(user, dates.Start, dates.End);
+        }
+        [HttpGet]
+        [Route("Payment/{userId:int}")]
+        public async Task<List<Payment>> GetPayments(int userId)
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception();
+            }
+            if (admin.IsAdmin != true)
+            {
+                return await GetPaymentsCalculations(admin);
+            }
+
+            return await GetPaymentsCalculations(user);
+        }
+        [HttpPost]
+        [Route("Payment")]
+        public async Task<int> AddPayment(Payment payment)
+        {
+            
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
+            var user = await _userService.GetUserByIdAsync(Convert.ToInt32(payment.UserId));
+            if (user == null || admin.IsAdmin != true)
+            {
+                throw new Exception();
+            }
+
+            var paymentId = await _userService.AddUserPaymentAsync(payment);
+            return paymentId;
+        }
+
+        private async Task<ProductSoldParent> GetProductsSold(User user, DateTime startDate, DateTime endDate)
+        {
             var productsSoldTotal = 0;
             var productsSoldProfit = (decimal)0.0;
 
             var rates = await _userService.GetUserRatesAsync(user);
-            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, rates, dates.Start, dates.End);
+            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, rates, startDate, endDate);
             List<ProductSoldChild> items = new List<ProductSoldChild>();
 
             foreach (var order in orders)
@@ -84,99 +139,16 @@ namespace Brickalytics.Controllers
             };
             return model;
         }
-        [HttpPost]
-        [Route("ProductsSoldAdmin")]
-        public async Task<ProductSoldParent> GetProductsSoldAdmin(Dates dates)
+
+        private async Task<List<Payment>> GetPaymentsCalculations(User user)
         {
-            dates.Start = new DateTime(dates.Start.Year, dates.Start.Month, dates.Start.Day, 0, 0, 0);
-            dates.End = new DateTime(dates.End.Year, dates.End.Month, dates.End.Day, 23, 59, 59);
-            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
-            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
-            var user = await _userService.GetUserByIdAsync(Convert.ToInt32(dates.Id));
-            if (user == null || admin.IsAdmin != true)
-            {
-                throw new Exception();
-            }
-            var productsSoldTotal = 0;
-            var productsSoldProfit = (decimal)0.0;
+            var lastPayment = await _userService.GetLastPaymentAsync(user.Id);
+            var orderProfit = (await GetProductsSold(user, lastPayment, DateTime.Now)).ProductsSoldProfit;
 
-            var rates = await _userService.GetUserRatesAsync(user);
-            var orders = await _shopifyService.GetCreatorsAnalyticsAsync(user, rates, dates.Start, dates.End);
-            List<ProductSoldChild> items = new List<ProductSoldChild>();
-
-            foreach (var order in orders)
-            {
-                if (order.Count > 0)
-                {
-                    foreach (var rate in rates)
-                    {
-                        if ((int)order.ProductType == rate.ProductTypeId)
-                        {
-                            decimal? total;
-                            if (rate.Rate != null)
-                            {
-                                total = (order.Count * rate.Rate);
-                            }
-                            else
-                            {
-
-                                total = (order.Count * order.Price) * rate.Percent;
-                            }
-                            productsSoldTotal += order.Count;
-                            productsSoldProfit += Convert.ToDecimal(total);
-                            var item = new ProductSoldChild()
-                            {
-                                Count = order.Count,
-                                ItemName = order.Name,
-                                Total = Convert.ToDecimal(total)
-                            };
-                            items.Add(item);
-                        }
-                    }
-                }
-            }
-
-            var model = new ProductSoldParent()
-            {
-                ProductsSoldProfit = productsSoldProfit,
-                ProductsSoldTotal = productsSoldTotal,
-                Items = items
-            };
-            return model;
-        }
-        [HttpGet]
-        [Route("Payment/{userId:int}")]
-        public async Task<List<Payment>> GetPayments(int userId)
-        {
-            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
-            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
-            var user = await _userService.GetUserByIdAsync(userId);
-            if (user == null || admin.IsAdmin != true)
-            {
-                throw new Exception();
-            }
-            if (admin.IsAdmin != true)
-            {
-                return await _userService.GetUserPaymentsAsync(admin.Id);
-            }
-
-            return await _userService.GetUserPaymentsAsync(userId);
-        }
-        [HttpPost]
-        [Route("Payment")]
-        public async Task<int> AddPayment(Payment payment)
-        {
-
-            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
-            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
-            var user = await _userService.GetUserByIdAsync(Convert.ToInt32(payment.UserId));
-            if (user == null || admin.IsAdmin != true)
-            {
-                throw new Exception();
-            }
-
-            var payments = await _userService.AddUserPaymentAsync(payment);
-            return payments;
+            var response = await _userService.GetUserPaymentsAsync(user.Id);
+                response = response.Where(payment => payment.Id <= 6).ToList();
+                response.Add(new Payment(){Id = 0, UserId = user.Id, PaymentAmount = orderProfit, PaymentDate = DateTime.Now});
+                return response;
         }
     }
 }
