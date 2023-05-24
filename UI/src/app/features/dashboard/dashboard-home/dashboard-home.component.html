@@ -1,12 +1,10 @@
 <mat-tab-group>
   <mat-tab label="Analytics">
-    <div class="container" fxLayout="row" fxLayoutAlign="center none">
-      <div fxFlex="95%">
         <div class="container" fxLayout="row" fxLayoutAlign="center none">
           <div fxFlex="50%" class="text-center no-records animate">
             <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
               <mat-label>Creator</mat-label>
-              <mat-select formControlName="id" >
+              <mat-select formControlName="id">
                 <mat-option *ngFor="let creator of creators" [value]="creator.id">
                   {{creator.name}}
                 </mat-option>
@@ -14,7 +12,7 @@
             </mat-form-field>
             <mat-form-field>
               <mat-label>Enter a date range</mat-label>
-              <mat-date-range-input [formGroup]="rangeForm" [rangePicker]="picker" >
+              <mat-date-range-input [formGroup]="rangeForm" [rangePicker]="picker">
                 <input matStartDate formControlName="start" placeholder="Start date">
                 <input matEndDate formControlName="end" placeholder="End date">
               </mat-date-range-input>
@@ -23,7 +21,7 @@
               <mat-error *ngIf="rangeForm.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
               <mat-error *ngIf="rangeForm.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
             </mat-form-field>
-            <button mat-flat-button color="accent" (click)="getProductsSold()" >Search</button>
+            <button mat-flat-button color="accent" (click)="getProductsSold()">Search</button>
             <mat-grid-list cols="1" rowHeight="1:5">
               <mat-grid-tile [colspan]="1" [rowspan]="1">
                 <mat-card class="dashboard-card">
@@ -49,7 +47,8 @@
                     <mat-list>
                       <div>
                         <mat-divider></mat-divider>
-                        <mat-list-item class="row col-md-12">
+                        <mat-list-item>
+                          <div class="row col-md-12">
                             <div class="col-md-9 col-sm-4 col-xs-7">
                               <b>Product Name</b>
                             </div>
@@ -59,6 +58,7 @@
                             <div class="col-md-1 col-sm-2 col-xs-2">
                               <b>Count</b>
                             </div>
+                          </div>
                         </mat-list-item>
                       </div>
                       <div *ngFor="let product of productsSold.items">
@@ -84,34 +84,108 @@
             </mat-grid-list>
           </div>
         </div>
-      </div>
-    </div>
   </mat-tab>
   <mat-tab label="Payments">
     <div class="container" fxLayout="row" fxLayoutAlign="center none">
-      <div fxFlex="100%">
-        <div class="container" fxLayout="row" fxLayoutAlign="center none">
-          <div fxFlex="100%" class="no-records animate">
-            <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
-              <mat-grid-tile [colspan]="1" [rowspan]="1">
-                <mat-card class="dashboard-card">
-                  <mat-card-header class="dashboard-card-header">
-                      <mat-card-title>
-                        <b class="product-total">$20</b>
-                      </mat-card-title>
-                      <mat-card-subtitle class="payment-date">
-                        <b>May 15th 2023</b>
-                      </mat-card-subtitle>
-                      <mat-card-subtitle>
-                        10:30AM
-                      </mat-card-subtitle>
-                  </mat-card-header>
-                </mat-card>
-              </mat-grid-tile>
-            </mat-grid-list>
-          </div>
-        </div>
-      </div>
+      <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
+      <mat-label>Creator</mat-label>
+      <mat-select formControlName="id">
+        <mat-option *ngFor="let creator of creators" [value]="creator.id">
+          {{creator.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button [hidden]="!isAdmin" mat-flat-button color="accent" (click)="getProductsSold()">Search</button>
+      <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">$20
+                  <button [hidden]="!isAdmin" mat-button (click)="getProductsSold()">Pay Creator</button></b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>Owed</b>
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">$54</b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>April 1st 2023</b>
+              </mat-card-subtitle>
+              <mat-card-subtitle>
+                8:00AM
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">$54</b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>April 1st 2023</b>
+              </mat-card-subtitle>
+              <mat-card-subtitle>
+                8:00AM
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">$54</b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>April 1st 2023</b>
+              </mat-card-subtitle>
+              <mat-card-subtitle>
+                8:00AM
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">$54</b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>April 1st 2023</b>
+              </mat-card-subtitle>
+              <mat-card-subtitle>
+                8:00AM
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">$54</b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>April 1st 2023</b>
+              </mat-card-subtitle>
+              <mat-card-subtitle>
+                8:00AM
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
     </div>
   </mat-tab>
 </mat-tab-group>

@@ -147,7 +147,7 @@ namespace Brickalytics.Controllers
 
             var response = await _userService.GetUserPaymentsAsync(user.Id);
                 response = response.Where(payment => payment.Id <= 6).ToList();
-                response.Add(new Payment(){Id = 0, UserId = user.Id, PaymentAmount = orderProfit, PaymentDate = DateTime.Now});
+                response.Insert(0, new Payment(){Id = 0, UserId = user.Id, PaymentAmount = orderProfit, PaymentDate = DateTime.Now});
                 return response;
         }
     }

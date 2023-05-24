@@ -6,9 +6,8 @@ import { CurrentUser } from 'src/app/core/models/currentUser';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
-import { ProductsSoldChild } from 'src/app/core/models/productsSoldChild';
 import { GenericType } from 'src/app/core/models/genericType';
-import { User } from 'src/app/core/models/user';
+import { Payment } from 'src/app/core/models/payment';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -22,6 +21,7 @@ export class DashboardHomeComponent implements OnInit {
   rangeForm!: FormGroup;
   creatorForm!: FormGroup;
   creators: GenericType[] = [];
+  payments: Payment[] = [];
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
   breakpoint = 0;
@@ -43,10 +43,8 @@ export class DashboardHomeComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
     this.isAdmin = this.currentUser.isAdmin;
     this.titleService.setTitle('Brickalytics - Dashboard');
-    console.log("this.currentUser", this.currentUser);
-    console.log("this.isAdmin", this.isAdmin);
     this.getCreators();
-    this.onResizeInit(window.innerWidth);
+    this.breakpoint = this.onResizeInit(window.innerWidth);
   }
 
   getUserById(id: number) {
@@ -64,7 +62,7 @@ export class DashboardHomeComponent implements OnInit {
       })
     } else {
       console.log("getCreatorNames user");
-
+      this.getPayments();
       this.createForms();
     }
   }
@@ -91,6 +89,19 @@ export class DashboardHomeComponent implements OnInit {
         this.productsSold = res;
       });
     }
+  }
+  getPayments() {
+    if (this.currentUser?.isAdmin) {
+      var id = this.creatorForm.get('id')?.value;
+      this.dashboardService.getPayments(id).subscribe(res => {
+        this.payments = res;
+      });
+    } else {
+      this.dashboardService.getPayments(0).subscribe(res => {
+        this.payments = res;
+      });
+    }
+    console.log("this.payments", this.payments);
   }
 
   getProductsSoldAdmin() {
@@ -126,6 +137,7 @@ export class DashboardHomeComponent implements OnInit {
     });
 
     this.getProductsSold();
+    this.getPayments();
   }
 
   private getMonday(date: Date) {
@@ -141,6 +153,7 @@ export class DashboardHomeComponent implements OnInit {
   }
   onResizeInit(width:number){
     console.log("width", width);
+      if  (width >= 1400) { return 5};
       if (width < 1400) { return 4};
       if (width < 1200) { return 3};
       if (width < 992) { return 2};
@@ -148,6 +161,7 @@ export class DashboardHomeComponent implements OnInit {
       return 5;
   }
   onResize(event:any) {
+    console.log("width", event.target.innerWidth);
       if  (event.target.innerWidth >= 1400) { this.breakpoint = 5};
       if (event.target.innerWidth < 1400) { this.breakpoint = 4};
       if (event.target.innerWidth < 1200) { this.breakpoint = 3};
