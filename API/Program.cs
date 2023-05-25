@@ -68,8 +68,6 @@ builder.Services.AddScoped<IShopifyService, ShopifyService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
-builder.Services.AddScoped<IProductSubTypeService, ProductSubTypeService>();
-
 builder.Host.ConfigureAppSettings(IsDevelopment:builder.Environment.IsDevelopment());
 
 var app = builder.Build();

@@ -3,10 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { GenericType } from 'src/app/core/models/genericType';
-import { ProductSubType } from 'src/app/core/models/productSubType';
 import { User } from 'src/app/core/models/user';
 import { NotificationService } from 'src/app/core/services/notification.service';
-import { ProductSubTypeService } from 'src/app/core/services/productSubType.service';
 import { ProductTypeService } from 'src/app/core/services/productType.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { UserModal } from 'src/app/features/users/userModal/user-modal.component';
@@ -22,7 +20,6 @@ export class UserListComponent implements OnInit {
   roleList: GenericType[] = [];
   collectionList: GenericType[] = [];
   productTypeList: GenericType[] = [];
-  productSubTypeList: ProductSubType[] = [];
   length = 50;
   pageSize = 10;
   pageIndex = 0;
@@ -36,7 +33,6 @@ export class UserListComponent implements OnInit {
   constructor(
     private userService: UserService,
     private productTypeService: ProductTypeService,
-    private productSubTypeService: ProductSubTypeService,
     private titleService: Title,
     private notificationService: NotificationService,
     private dialog: MatDialog
@@ -83,15 +79,6 @@ export class UserListComponent implements OnInit {
     err =>{
       console.error('Error getting product type list: ', err)
       this.notificationService.openSnackBar('Error getting product type list');
-    });
-  }
-  getProductSubTypeList(){
-    this.productSubTypeService.getProductSubTypes().subscribe(productSubTypes =>{
-      this.productSubTypeList = productSubTypes;
-    },
-    err =>{
-      console.error('Error getting product sub type list: ', err)
-      this.notificationService.openSnackBar('Error getting product sub type list');
     });
   }
   addUser(user: User){

@@ -87,15 +87,17 @@
   </mat-tab>
   <mat-tab label="Payments">
     <div class="container" fxLayout="row" fxLayoutAlign="center none">
-      <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
-      <mat-label>Creator</mat-label>
-      <mat-select formControlName="id">
-        <mat-option *ngFor="let creator of creators" [value]="creator.id">
-          {{creator.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <button [hidden]="!isAdmin" mat-flat-button color="accent" (click)="getPayments()">Search</button>
+      <div fxFlex="100%" class="text-center no-records animate">
+        <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
+          <mat-label>Creator</mat-label>
+          <mat-select formControlName="id">
+            <mat-option *ngFor="let creator of creators" [value]="creator.id">
+              {{creator.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button [hidden]="!isAdmin" mat-flat-button color="accent" (click)="getPayments()">Search</button>
+      </div>
     <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
       <mat-grid-tile [colspan]="1" [rowspan]="1">
         <mat-card class="dashboard-card">

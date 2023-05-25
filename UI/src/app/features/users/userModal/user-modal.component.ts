@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors,
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { GenericType } from 'src/app/core/models/genericType';
 import { User } from 'src/app/core/models/user';
+import { UserRatesModal } from '../userRatesModal/user-rates-modal.component';
 
 @Component({
   selector: 'app-user-modal',
@@ -50,7 +51,7 @@ export class UserModal implements OnInit {
   }
   openUserModal(){
 
-    const dialogRef = this.dialog.open(UserModal, {
+    const dialogRef = this.dialog.open(UserRatesModal, {
       data: {user: this.user, roleList: this.roleList, collectionList: this.collectionList}
     });
 

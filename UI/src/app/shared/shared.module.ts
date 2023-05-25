@@ -10,6 +10,7 @@ import { LocalDatePipe } from './pipes/local-date.pipe';
 import { YesNoPipe } from './pipes/yes-no.pipe';
 import { LayoutComponent } from './layout/layout.component';
 import { ResetPasswordModal } from './layout/resetPassword/reset-password-modal.component';
+import { UserRatesModal } from '../features/users/userRatesModal/user-rates-modal.component';
 
 @NgModule({
     imports: [
@@ -20,6 +21,7 @@ import { ResetPasswordModal } from './layout/resetPassword/reset-password-modal.
     ],
     declarations: [
         ConfirmDialogComponent,
+        UserRatesModal,
         ResetPasswordModal,
         ContentPlaceholderAnimationComponent,
         LimitToPipe,

@@ -123,7 +123,6 @@ namespace Brickalytics.Services
             var parameters = new DynamicParameters();
             parameters.Add("UserId", userRate.UserId);
             parameters.Add("ProductTypeId", userRate.ProductTypeId);
-            parameters.Add("ProductSubTypeId", userRate.ProductSubTypeId);
             parameters.Add("Rate", userRate.Rate);
             parameters.Add("Percent", userRate.Percent);
 
@@ -134,7 +133,6 @@ namespace Brickalytics.Services
             var parameters = new DynamicParameters();
             parameters.Add("UserId", userRate.UserId);
             parameters.Add("ProductTypeId", userRate.ProductTypeId);
-            parameters.Add("ProductSubTypeId", userRate.ProductSubTypeId);
 
             await Task.FromResult(_dapper.Delete<UserRate>("DeleteUserRate", parameters));
         }

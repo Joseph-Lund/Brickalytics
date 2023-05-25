@@ -52,7 +52,6 @@ export class UserRatesModal implements OnInit {
     creds.push(this.fb.group({
       userId: this.user.id,
       productTypeId: 0,
-      productSubTypeId: 0,
       rate: null,
       percent: null
     }));

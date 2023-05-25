@@ -52,12 +52,6 @@ namespace Brickalytics.Services
         }
         public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, List<UserRate> rates, DateTime? startDate, DateTime? endDate)
         {
-            //TODO: If user is not normal user, then get all the users collection ids
-            // if (user.CollectionId == 0)
-            // {
-            //     user.CollectionId = 199995129965;
-            // }
-
             var products = await GetCollectionsProductsAsync((long)user.CollectionId, rates, startDate, endDate);
             return products;
         }
@@ -100,37 +94,15 @@ namespace Brickalytics.Services
             var collections = await collectionService.ListProductsAsync(collectionId);
             List<Order> collectionProducts = new List<Order>();
 
-            var productTypeIdsWithNoSubs = rates
-                .Where(rate => rate.ProductSubTypeId == 0)
-                .Select(rate => rate.ProductTypeId)
-                .Distinct()
-                .ToList();
-
             foreach (var product in collections.Items)
             {
                 // has a rate
                 bool productTypeIdExists = rates.Any(rate => (rate.ProductTypeId == GetProductTypeId(product.ProductType)));
-                // bool productHasNoSubs = productTypeIdsWithNoSubs.Contains(GetProductTypeId(product.ProductType));
 
                 if (productTypeIdExists)
                 {
-                    // if (!productHasNoSubs)
-                    // {
-                    //     var variants = (await productVariantService.ListAsync((long)product.Id)).Items;
-                    //     if (variants.Count() > 0)
-                    //     {
-                    //         foreach (var variaint in variants)
-                    //         {
-                    //             collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = GetProductSubTypeId(variaint.Option1), Rate = GetRate(rates, GetProductTypeId(product.ProductType), GetProductSubTypeId(variaint.Option1)) });
+                    collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = 0, Rate = GetRate(rates, GetProductTypeId(product.ProductType)) });
 
-                    //         }
-
-                    //     }
-                    // }
-                    // else
-                    // {
-                        collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = 0, Rate = GetRate(rates, GetProductTypeId(product.ProductType), 0) });
-                    // }
                 }
             }
             collectionProducts = await GetProductsSoldCountAsync(collectionProducts, startDate, endDate);
@@ -151,52 +123,68 @@ namespace Brickalytics.Services
                                 var priceTotal = 0.0;
                                 var variant = (long)Convert.ToDouble(lineItem.VariantId);
                                 // Shammy
-                                if(variant == 44364937789755){
+                                if (variant == 44364937789755)
+                                {
                                     priceTotal = 25.00;
-                                }else if (variant == 44364926386491){
-                                    
+                                }
+                                else if (variant == 44364926386491)
+                                {
+
                                     priceTotal = 25.00;
-                                }else if (variant == 44364926386491){
-                                    
+                                }
+                                else if (variant == 44364926386491)
+                                {
+
                                     priceTotal = 25.00;
-                                }else if (variant == 44364945162555){
-                                    
+                                }
+                                else if (variant == 44364945162555)
+                                {
+
                                     priceTotal = 57.50;
-                                }else if (variant == 44364945031483){
-                                    
+                                }
+                                else if (variant == 44364945031483)
+                                {
+
                                     priceTotal = 55.00;
                                 }
                                 // Dicehammer
-                                else if (variant== 45192255340859){
-                                    
+                                else if (variant == 45192255340859)
+                                {
+
                                     priceTotal = 55.00;
                                 }
-                                else if (variant == 45192422588731){
-                                    
+                                else if (variant == 45192422588731)
+                                {
+
                                     priceTotal = 25.00;
                                 }
-                                else if (variant == 45192495169851){
-                                    
+                                else if (variant == 45192495169851)
+                                {
+
                                     priceTotal = 25.00;
                                 }
-                                else if (variant == 45192422687035){
-                                    
+                                else if (variant == 45192422687035)
+                                {
+
                                     priceTotal = 25.00;
                                 }
-                                else if (variant == 5308663628091){
-                                    
+                                else if (variant == 5308663628091)
+                                {
+
                                     priceTotal = 25.00;
                                 }
-                                else if (variant == 45192422555963){
-                                    
+                                else if (variant == 45192422555963)
+                                {
+
                                     priceTotal = 25.00;
                                 }
-                                else if (variant == 44364926124347){
-                                    
+                                else if (variant == 44364926124347)
+                                {
+
                                     priceTotal = 25.00;
                                 }
                                 decimal price = (decimal)lineItem.Price!;
-                                analytic.Price = priceTotal  ==  0.0 ? (decimal)lineItem.Price : (decimal)priceTotal;
+                                analytic.Price = priceTotal == 0.0 ? (decimal)lineItem.Price : (decimal)priceTotal;
                                 analytic.Rate = analytic.Rate;
                                 analytic.Count++;
                             }
@@ -266,28 +254,12 @@ namespace Brickalytics.Services
                 return 0;
             }
         }
-
-        private int GetProductSubTypeId(string name)
+        private decimal GetRate(List<UserRate> rates, int productTypeId)
         {
-            switch (name)
+            foreach (var rate in rates)
             {
-                case "8x10 in.":
-                    return 19;
-                case "11x14 in.":
-                    return 20;
-                case "18x24 in.":
-                    return 21;
-                case "24x36 in.":
-                    return 22;
-                default:
-                    return 0;
-            }
-        }
-
-        private decimal GetRate(List<UserRate> rates, int productTypeId, int productSubTypeId)
-        {
-            foreach(var rate in rates){
-                if(rate.ProductTypeId == productTypeId && rate.ProductTypeId == productSubTypeId){
+                if (rate.ProductTypeId == productTypeId)
+                {
                     return Convert.ToDecimal(rate.Rate);
                 }
             }

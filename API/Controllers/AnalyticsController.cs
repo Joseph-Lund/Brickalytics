@@ -68,7 +68,6 @@ namespace Brickalytics.Controllers
             }
             if (admin.IsAdmin != true)
             {
-                var payments = await GetPaymentsCalculations(admin);
                 return await GetPaymentsCalculations(admin);
             }
 
