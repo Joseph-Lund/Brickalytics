@@ -95,92 +95,34 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <button [hidden]="!isAdmin" mat-flat-button color="accent" (click)="getProductsSold()">Search</button>
+    <button [hidden]="!isAdmin" mat-flat-button color="accent" (click)="getPayments()">Search</button>
+    <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <mat-card class="dashboard-card">
+          <mat-card-header class="dashboard-card-header">
+            <mat-card-title>
+              <b class="product-total">${{owed?.paymentAmount}}</b>
+              <button [hidden]="!isAdmin" mat-button color="primary" (click)="getProductsSold()">Pay Creator</button>
+            </mat-card-title>
+            <mat-card-subtitle class="payment-date">
+              <b>Owed</b>
+            </mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
       <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <mat-grid-tile *ngFor="let payment of payments" [colspan]="1" [rowspan]="1" >
           <mat-card class="dashboard-card">
             <mat-card-header class="dashboard-card-header">
               <mat-card-title>
-                <b class="product-total">$20
-                  <button [hidden]="!isAdmin" mat-button (click)="getProductsSold()">Pay Creator</button></b>
+                <b class="product-total">${{payment.paymentAmount}}</b>
               </mat-card-title>
               <mat-card-subtitle class="payment-date">
-                <b>Owed</b>
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">$54</b>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>April 1st 2023</b>
+                <b>{{payment.formattedDate}}</b>
               </mat-card-subtitle>
               <mat-card-subtitle>
-                8:00AM
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">$54</b>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>April 1st 2023</b>
-              </mat-card-subtitle>
-              <mat-card-subtitle>
-                8:00AM
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">$54</b>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>April 1st 2023</b>
-              </mat-card-subtitle>
-              <mat-card-subtitle>
-                8:00AM
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">$54</b>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>April 1st 2023</b>
-              </mat-card-subtitle>
-              <mat-card-subtitle>
-                8:00AM
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">$54</b>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>April 1st 2023</b>
-              </mat-card-subtitle>
-              <mat-card-subtitle>
-                8:00AM
+                {{payment.formattedTime}}
               </mat-card-subtitle>
             </mat-card-header>
           </mat-card>

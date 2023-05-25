@@ -31,7 +31,7 @@ namespace Brickalytics.Services
         public async Task<DateTime> GetLastPaymentAsync(int userId)
         {
             var parameters = new DynamicParameters();
-            parameters.Add("Id", userId);
+            parameters.Add("UserId", userId);
             var result = await Task.FromResult(_dapper.Get<DateTime>("GetUserLastPaymentByUserId", parameters));
             return result;
         }

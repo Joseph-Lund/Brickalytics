@@ -21,6 +21,7 @@ export class DashboardHomeComponent implements OnInit {
   rangeForm!: FormGroup;
   creatorForm!: FormGroup;
   creators: GenericType[] = [];
+  owed: Payment | undefined;
   payments: Payment[] = [];
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
@@ -52,16 +53,12 @@ export class DashboardHomeComponent implements OnInit {
   }
 
   getCreators() {
-    console.log("getCreators in");
     if (this.currentUser?.isAdmin) {
       this.userService.getCreatorNames().subscribe(res => {
-
-    console.log("getCreatorNames admin", res);
         this.creators = res;
         this.createForms();
       })
     } else {
-      console.log("getCreatorNames user");
       this.getPayments();
       this.createForms();
     }
@@ -78,8 +75,6 @@ export class DashboardHomeComponent implements OnInit {
     }
     if (this.currentUser?.isAdmin) {
       var id = this.creatorForm.get('id')?.value;
-
-      console.log("this.creatorForm.get('id')?.value", id);
       this.dashboardService.getProductsSoldAdmin(start, end, id).subscribe(res => {
         this.productsSold = res;
       });
@@ -94,14 +89,15 @@ export class DashboardHomeComponent implements OnInit {
     if (this.currentUser?.isAdmin) {
       var id = this.creatorForm.get('id')?.value;
       this.dashboardService.getPayments(id).subscribe(res => {
+        this.owed = res.shift();
         this.payments = res;
       });
     } else {
       this.dashboardService.getPayments(0).subscribe(res => {
+        this.owed = res.shift();
         this.payments = res;
       });
     }
-    console.log("this.payments", this.payments);
   }
 
   getProductsSoldAdmin() {
@@ -152,7 +148,6 @@ export class DashboardHomeComponent implements OnInit {
     return lastWeek;
   }
   onResizeInit(width:number){
-    console.log("width", width);
       if  (width >= 1400) { return 5};
       if (width < 1400) { return 4};
       if (width < 1200) { return 3};
@@ -161,7 +156,6 @@ export class DashboardHomeComponent implements OnInit {
       return 5;
   }
   onResize(event:any) {
-    console.log("width", event.target.innerWidth);
       if  (event.target.innerWidth >= 1400) { this.breakpoint = 5};
       if (event.target.innerWidth < 1400) { this.breakpoint = 4};
       if (event.target.innerWidth < 1200) { this.breakpoint = 3};

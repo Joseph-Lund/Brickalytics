@@ -68,6 +68,7 @@ namespace Brickalytics.Controllers
             }
             if (admin.IsAdmin != true)
             {
+                var payments = await GetPaymentsCalculations(admin);
                 return await GetPaymentsCalculations(admin);
             }
 
@@ -146,9 +147,9 @@ namespace Brickalytics.Controllers
             var orderProfit = (await GetProductsSold(user, lastPayment, DateTime.Now)).ProductsSoldProfit;
 
             var response = await _userService.GetUserPaymentsAsync(user.Id);
-                response = response.Where(payment => payment.Id <= 6).ToList();
-                response.Insert(0, new Payment(){Id = 0, UserId = user.Id, PaymentAmount = orderProfit, PaymentDate = DateTime.Now});
-                return response;
+                response = response.Where(payment => payment.Id > 6).ToList();
+                response.Insert(0, new Payment(){Id = 0, UserId = null, PaymentAmount = orderProfit, PaymentDate = DateTime.Now});
+            return response;
         }
     }
 }
