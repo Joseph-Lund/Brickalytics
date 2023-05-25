@@ -18,15 +18,17 @@ namespace Brickalytics.Controllers
         private readonly IUserService _userService;
         private readonly IShopifyService _shopifyService;
         private readonly ITokenHelper _tokenHelper;
-        IRoleService _roleService;
+        private readonly IProductTypeService _productTypeService;
+        private readonly IRoleService _roleService;
 
-        public UserController(ILogger<UserController> logger, IUserService userService, IRoleService roleService, IShopifyService shopifyService, ITokenHelper tokenHelper)
+        public UserController(ILogger<UserController> logger, IUserService userService, IRoleService roleService, IShopifyService shopifyService, ITokenHelper tokenHelper, IProductTypeService productTypeService)
         {
             _logger = logger;
             _userService = userService;
             _tokenHelper = tokenHelper;
             _shopifyService = shopifyService;
             _roleService= roleService;
+            _productTypeService= productTypeService;
         }
 
         [HttpGet]
@@ -141,6 +143,36 @@ namespace Brickalytics.Controllers
                 return result;
             }
             throw new UnauthorizedAccessException();
+        }
+        [HttpGet]
+        [Route("ProductTypes")]
+        public async Task<List<ProductType>> GetProductTypes()
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            if(_tokenHelper.IsUserAdmin(accessToken))
+            {
+                var result = await _productTypeService.GetProductTypesAsync();
+                return result;
+            }
+            throw new UnauthorizedAccessException();
+        }
+        [HttpGet]
+        [Route("Rate/{userId:int}")]
+        public async Task<List<UserRate>> GetUserRates(int userId)
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
+            var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception();
+            }
+            if (admin.IsAdmin != true)
+            {
+                return await _userService.GetUserRatesAsync(admin);
+            }
+
+            return await _userService.GetUserRatesAsync(user);
         }
     }
 }
