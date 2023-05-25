@@ -1,14 +1,14 @@
 <form [formGroup]="userRatesForm">
-  <div class="col-md-12">
+  <!-- <div class="col-md-12">
     <button mat-button color="warn" class="float-end" (click)="cancel()">X</button>
-    <button mat-button color="primary" class="float-end" (click)="submit()" [disabled]="!userForm.valid">SAVE</button>
+    <button mat-button color="primary" class="float-end" (click)="submit()" [disabled]="!userRatesForm.valid">SAVE</button>
     <button mat-button color="accent" class="float-end" (click)="openUserModal()">RATES</button>
   </div>
   <div class="col-md-12">
     <mat-form-field>
       <mat-label>Creator Name</mat-label>
       <input matInput placeholder="Creator Name" formControlName="creatorName" type="text">
-      <mat-error *ngIf="userForm.controls['creatorName'].hasError('required')">
+      <mat-error *ngIf="userRatesForm.controls['creatorName'].hasError('required')">
         Username is
         <strong>required</strong>
       </mat-error>
@@ -20,7 +20,7 @@
           {{activeState.name}}
         </mat-option>
       </mat-select>
-      <mat-error *ngIf="userForm.controls['active'].hasError('required')">
+      <mat-error *ngIf="userRatesForm.controls['active'].hasError('required')">
         Active is
         <strong>required</strong>
       </mat-error>
@@ -30,7 +30,7 @@
     <mat-form-field>
       <mat-label>Password</mat-label>
       <input matInput placeholder="Password" formControlName="password" type="password">
-      <mat-error *ngIf="userForm.controls['password'].hasError('required')">
+      <mat-error *ngIf="userRatesForm.controls['password'].hasError('required')">
         Password is
         <strong>required</strong>
       </mat-error>
@@ -42,7 +42,7 @@
           {{role.name}}
         </mat-option>
       </mat-select>
-      <mat-error *ngIf="userForm.controls['roleId'].hasError('required')">
+      <mat-error *ngIf="userRatesForm.controls['roleId'].hasError('required')">
         Role is
         <strong>required</strong>
       </mat-error>
@@ -53,11 +53,11 @@
     <mat-form-field>
       <mat-label>Confirm Password</mat-label>
       <input matInput placeholder="Password" formControlName="confirmPassword" type="password">
-      <mat-error *ngIf="userForm.controls['confirmPassword'].hasError('required')">
+      <mat-error *ngIf="userRatesForm.controls['confirmPassword'].hasError('required')">
         Passwords do not match
         <strong>required</strong>
       </mat-error>
-      <mat-error *ngIf="userForm.hasError('notSame')">
+      <mat-error *ngIf="userRatesForm.hasError('notSame')">
         Please confirm the password
       </mat-error>
     </mat-form-field>
@@ -72,5 +72,5 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-  </div>
+  </div> -->
 </form>
