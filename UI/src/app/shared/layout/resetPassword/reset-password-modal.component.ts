@@ -48,8 +48,8 @@ export class ResetPasswordModal implements OnInit {
   private createForm() {
     this.userForm = this.fb.group({
       oldPassword: new FormControl('', Validators.required),
-      password: new FormControl(''),
-      confirmPassword: new FormControl('')
+      password: new FormControl('', Validators.required),
+      confirmPassword: new FormControl('', Validators.required)
     }, { validators: this.checkPasswords });
 
   }

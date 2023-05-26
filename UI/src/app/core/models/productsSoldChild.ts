@@ -1,6 +1,6 @@
 export class ProductsSoldChild {
   itemName: string;
-  total: number;
+  total:any;
   count: number;
 
   constructor(itemName: string, total: number, count: number) {

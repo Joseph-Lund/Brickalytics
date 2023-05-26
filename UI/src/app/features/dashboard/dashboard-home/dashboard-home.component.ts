@@ -8,6 +8,7 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
 import { GenericType } from 'src/app/core/models/genericType';
 import { Payment } from 'src/app/core/models/payment';
+import { ProductsSoldChild } from 'src/app/core/models/productsSoldChild';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -26,6 +27,7 @@ export class DashboardHomeComponent implements OnInit {
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
   breakpoint = 0;
+  displayedColumns: string[] = ['ProductName', 'ProfitShare', 'Count'];
 
   constructor(private userService: UserService,
     private authService: AuthenticationService,
@@ -45,7 +47,7 @@ export class DashboardHomeComponent implements OnInit {
     this.isAdmin = this.currentUser.isAdmin;
     this.titleService.setTitle('Brickalytics - Dashboard');
     this.getCreators();
-    this.breakpoint = this.onResizeInit(window.innerWidth);
+    this.onResizeInit();
   }
 
   getUserById(id: number) {
@@ -76,6 +78,9 @@ export class DashboardHomeComponent implements OnInit {
     if (this.currentUser?.isAdmin) {
       var id = this.creatorForm.get('id')?.value;
       this.dashboardService.getProductsSoldAdmin(start, end, id).subscribe(res => {
+        for(var i = 0; i < res.items.length; i++){
+          res.items[i].total = (Math.round(parseFloat(res.items[i].total) * 100) / 100).toFixed(2).toString()
+        }
         this.productsSold = res;
       });
 
@@ -147,13 +152,12 @@ export class DashboardHomeComponent implements OnInit {
     var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
     return lastWeek;
   }
-  onResizeInit(width:number){
-      if  (width >= 1400) { return 5};
-      if (width < 1400) { return 4};
-      if (width < 1200) { return 3};
-      if (width < 992) { return 2};
-      if (width < 550) { return 1};
-      return 5;
+  onResizeInit(){
+    if  (window.innerWidth >= 1400) { this.breakpoint = 5};
+    if (window.innerWidth < 1400) { this.breakpoint = 4}
+    if (window.innerWidth < 1200) { this.breakpoint = 3}
+    if (window.innerWidth < 992) { this.breakpoint = 2}
+    if (window.innerWidth < 550) { this.breakpoint = 1}
   }
   onResize(event:any) {
       if  (event.target.innerWidth >= 1400) { this.breakpoint = 5};

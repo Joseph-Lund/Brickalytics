@@ -63,12 +63,12 @@ export class UserModal implements OnInit {
   private createForm() {
     this.userForm = this.fb.group({
       creatorName: new FormControl(this.user.creatorName, Validators.required),
-      password: new FormControl(''),
-      confirmPassword: new FormControl(''),
+      password: new FormControl('', Validators.required),
+      confirmPassword: new FormControl('', Validators.required),
       roleId: new FormControl(this.user.roleId, Validators.required),
       active: new FormControl(this.user.active, Validators.required),
-      collectionId: new FormControl(this.user.collectionId)
-    }, { validators: this.checkPasswords });
+      collectionId: new FormControl(this.user.collectionId, Validators.required)
+    }, { validators: [this.checkPasswords, this.checkColldectionId] });
 
   }
 
@@ -79,6 +79,14 @@ export class UserModal implements OnInit {
     return pass === confirmPass ? null : { notSame: true };
     }else{
       return null;
+    }
+  }
+  private checkColldectionId: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+    let collectionId = group.get('collectionId')?.value;
+    if(collectionId){
+      return null;
+    }else{
+      return collectionId ? null : { collectionNotSelected: true };
     }
   }
 

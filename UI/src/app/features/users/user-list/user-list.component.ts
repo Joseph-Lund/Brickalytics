@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
@@ -25,10 +25,11 @@ export class UserListComponent implements OnInit {
   pageIndex = 0;
   pageSizeOptions = [5, 10, 25];
   isLoadingResults: boolean = false;
-  isRateLimitReached: boolean = false;
   showFirstLastButtons: boolean = true;
   pageEvent: PageEvent | null = null;
   displayedColumns: string[] = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
+  isColumnsMobile: boolean = false;
+
 
   constructor(
     private userService: UserService,
@@ -40,6 +41,16 @@ export class UserListComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Brickalytics - Users');
+    if(window.innerWidth < 992 && !this.isColumnsMobile) {
+
+      this.displayedColumns = ['CreatorName', 'Actions'];
+      this.isColumnsMobile = true;
+
+    } else if(window.innerWidth >= 992 && this.isColumnsMobile) {
+
+      this.displayedColumns = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
+      this.isColumnsMobile = false;
+    }
     this.getUsersList();
     this.getRolesList();
     this.getCollectionsList();
@@ -136,26 +147,25 @@ export class UserListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(_user => {
-       //TODO: Make it so I dont need to call the api again to refresh the results.
-       //      If new user added, add to the list and sort, if it already exists
-       //      then update the item in the list.
-
        this.getUsersList();
     });
   }
 
-  // handlePageEvent(e: PageEvent) {
-  //   this.pageEvent = e;
-  //   this.length = e.length;
-  //   this.pageSize = e.pageSize;
-  //   this.pageIndex = e.pageIndex;
-  // }
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
 
-  // setPageSizeOptions(setPageSizeOptionsInput: string) {
-  //   if (setPageSizeOptionsInput) {
-  //     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
-  //   }
-  // }
+  if(event.target.innerWidth < 992 && !this.isColumnsMobile) {
+
+    this.displayedColumns = ['CreatorName', 'Actions'];
+    this.isColumnsMobile = true;
+
+  } else if(event.target.innerWidth >= 992 && this.isColumnsMobile) {
+
+    this.displayedColumns = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
+    this.isColumnsMobile = false;
+  }
+
+}
 
 
 }

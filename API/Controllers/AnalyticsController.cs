@@ -110,12 +110,12 @@ namespace Brickalytics.Controllers
                             decimal total = (decimal)0.0;
                             if (rate.Rate != null)
                             {
-                                total = (order.Count * Convert.ToDecimal(rate.Rate));
+                                total = order.Count * Convert.ToDecimal(rate.Rate);
                             }
                             else
                             {
 
-                                total = (order.Count * order.Price) * Convert.ToDecimal(rate.Percent);
+                                total = order.Count * (order.Price * Convert.ToDecimal(rate.Percent));
                             }
                             productsSoldTotal += order.Count;
                             productsSoldProfit += (decimal)total;

@@ -59,7 +59,7 @@ export class AuthenticationService {
   refreshToken(): Observable<Token> {
     var user = this.currentUser;
 
-    var refreshUrl = this.apiUrl + 'Refresh';
+    var refreshUrl = this.apiUrl + '/Refresh';
     var refreshModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
 
     return this.http.post<Token>(refreshUrl, refreshModel).pipe(
