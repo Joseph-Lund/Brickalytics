@@ -10,7 +10,7 @@ namespace Brickalytics.Models
         Tee = 1,
         Hoodie = 2,
         Print = 3,
-        Strickers = 4,
+        Stickers = 4,
         Pillow = 5
     }
 }

@@ -50,24 +50,24 @@ namespace Brickalytics.Services
             })).ToList();
             return collections;
         }
-        public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, List<UserRate> rates, DateTime? startDate, DateTime? endDate)
+        public async Task<List<Order>> GetCreatorsAnalyticsAsync(User user, List<UserRate> rates, DateTime startDate, DateTime endDate)
         {
             var products = await GetCollectionsProductsAsync((long)user.CollectionId, rates, startDate, endDate);
             return products;
         }
-        private async Task<List<Order>> GetProductsSoldCountAsync(List<Order> analyticsDict, DateTime? startDate, DateTime? endDate)
+        private async Task<List<Order>> GetProductsSoldCountAsync(List<Order> analyticsDict, DateTime startDate, DateTime endDate)
         {
             var ordersInfo = new List<Order>();
 
-            IEnumerable<ShopifySharp.Order> orders = await GetCollectionOrders(startDate, endDate);
+            IEnumerable<ShopifySharp.Order> orders = await GetAllOrders(startDate, endDate);
             analyticsDict = GetOrderCountsDict(orders, analyticsDict);
 
             return analyticsDict;
         }
 
-        private async Task<List<ShopifySharp.Order>> GetCollectionOrders(DateTime? startDate, DateTime? endDate)
+        private async Task<List<ShopifySharp.Order>> GetAllOrders(DateTime startDate, DateTime endDate)
         {
-
+        
             var orderService = CreateService<ShopifySharp.OrderService>();
             var allOrders = new List<ShopifySharp.Order>();
             ShopifySharp.Lists.ListResult<ShopifySharp.Order> page;
@@ -87,7 +87,7 @@ namespace Brickalytics.Services
             }
             return allOrders;
         }
-        private async Task<List<Order>> GetCollectionsProductsAsync(long collectionId, List<UserRate> rates, DateTime? startDate, DateTime? endDate)
+        private async Task<List<Order>> GetCollectionsProductsAsync(long collectionId, List<UserRate> rates, DateTime startDate, DateTime endDate)
         {
             var collectionService = CreateService<ShopifySharp.CollectionService>();
             var productVariantService = CreateService<ShopifySharp.ProductVariantService>();
@@ -101,7 +101,7 @@ namespace Brickalytics.Services
 
                 if (productTypeIdExists)
                 {
-                    collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = 0, Rate = GetRate(rates, GetProductTypeId(product.ProductType)) });
+                    collectionProducts.Add(new Order { ProductId = (long)product.Id!, Name = product.Title, ProductType = (ProductTypes)GetProductTypeId(product.ProductType), ProductTypeId = GetProductTypeId(product.ProductType), Rate = GetRate(rates, GetProductTypeId(product.ProductType)) });
 
                 }
             }
@@ -219,19 +219,8 @@ namespace Brickalytics.Services
                     throw new ArgumentException("Unsupported service type");
             }
         }
-        private ShopifySharp.Filters.OrderListFilter CreateOrderListFilter(DateTimeOffset? startDate, DateTimeOffset? endDate)
+        private ShopifySharp.Filters.OrderListFilter CreateOrderListFilter(DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            var defaultDate = new DateTime(2023, 5, 6, 0, 0, 0);
-
-            if (startDate == null)
-            {
-                startDate = defaultDate;
-            }
-            if (endDate == null)
-            {
-                endDate = defaultDate.AddDays(1).AddSeconds(-1);
-            }
-
             var filter = new ShopifySharp.Filters.OrderListFilter()
             {
                 Limit = 250,
