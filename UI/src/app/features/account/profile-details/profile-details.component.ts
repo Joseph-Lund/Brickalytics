@@ -17,8 +17,8 @@ export class ProfileDetailsComponent implements OnInit {
   }
 
   getUserById(id: number){
-    this.userService.getUserById(id).subscribe(user =>{
-      this.userInfo = user;
+    this.userService.getUserById(id).subscribe(res =>{
+      this.userInfo = res.data;
     });
   }
   updateUser(user: User){

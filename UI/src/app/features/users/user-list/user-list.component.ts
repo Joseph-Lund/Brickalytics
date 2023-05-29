@@ -16,10 +16,10 @@ import { UserModal } from 'src/app/features/users/userModal/user-modal.component
 })
 export class UserListComponent implements OnInit {
 
-  userList: User[] | null = [];
-  roleList: GenericType[] | null = [];
-  collectionList: GenericType[] | null = [];
-  productTypeList: GenericType[] | null = [];
+  userList: User[] = [];
+  roleList: GenericType[] = [];
+  collectionList: GenericType[] = [];
+  productTypeList: GenericType[] = [];
   length = 50;
   pageSize = 10;
   pageIndex = 0;
@@ -59,7 +59,7 @@ export class UserListComponent implements OnInit {
   getUsersList() {
     this.userService.getUsers().subscribe(res => {
       if(res.code == 200){
-      this.userList = res.data;
+      this.userList = res.data!;
       } else {
       this.notificationService.openSnackBar(res.message);
       }
@@ -68,7 +68,7 @@ export class UserListComponent implements OnInit {
   getRolesList() {
     this.userService.getRoles().subscribe(res => {
       if(res.code == 200){
-      this.roleList = res.data;
+      this.roleList = res.data!;
       } else {
       this.notificationService.openSnackBar(res.message);
       }
@@ -77,7 +77,7 @@ export class UserListComponent implements OnInit {
   getCollectionsList() {
     this.userService.getCollections().subscribe(res => {
       if(res.code == 200){
-      this.collectionList = res.data;
+      this.collectionList = res.data!;
       } else {
       this.notificationService.openSnackBar(res.message);
       }
@@ -86,7 +86,7 @@ export class UserListComponent implements OnInit {
   getProductTypeList() {
     this.productTypeService.getProductTypes().subscribe(res => {
       if(res.code == 200){
-      this.productTypeList = res.data;
+      this.productTypeList = res.data!;
       } else {
       this.notificationService.openSnackBar(res.message);
       }

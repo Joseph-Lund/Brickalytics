@@ -38,16 +38,16 @@ export class ResetPasswordModal implements OnInit {
 
   submit() {
     //TODO: check if old password is correct in api
-      const password = this.userForm.get('password')?.value;
-      const confirmPassword = this.userForm.get('confirmPassword')?.value;
-      if (password == confirmPassword) {
-        this.userService.updateUserPassword(this.user.id!, password).subscribe(res => {
-          if(res.code == 200){
+    const password = this.userForm.get('password')?.value;
+    const confirmPassword = this.userForm.get('confirmPassword')?.value;
+    if (password == confirmPassword) {
+      this.userService.updateUserPassword(this.user.id!, password).subscribe(res => {
+        if (res.code == 200) {
           this.dialogRef.close();
-          } else {
-            this.notificationService.openSnackBar(res.message);
-          }
-        });
+        } else {
+          this.notificationService.openSnackBar(res.message);
+        }
+      });
     }
 
   }

@@ -9,6 +9,7 @@ import { catchError, filter, finalize, switchMap, take } from 'rxjs/operators';
 import { AuthenticationService } from '../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Token } from '../models/token';
+import { Result } from '../models/result';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -54,10 +55,10 @@ export class AuthInterceptor implements HttpInterceptor {
         this.refreshTokenSubject.next(null);
         this.authService
         return this.authService.refreshToken().pipe(
-          switchMap((response: Token) => {
-            if (response && response.accessToken) {
-              this.refreshTokenSubject.next(response.accessToken);
-              return next.handle(this.addToken(request, response.accessToken));
+          switchMap((response: Result<Token>) => {
+            if (response && response.data!.accessToken) {
+              this.refreshTokenSubject.next(response.data!.accessToken);
+              return next.handle(this.addToken(request, response.data!.accessToken));
             }
             return this.redirectToLogin();
           }),

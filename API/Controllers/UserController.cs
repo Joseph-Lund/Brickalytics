@@ -168,7 +168,7 @@ namespace Brickalytics.Controllers
                     iterationCount: 100000,
                     numBytesRequested: 256 / 8));
 
-                user.Data.Hash = hash;
+                user.Data!.Hash = hash;
                 user.Data.Salt = Convert.ToBase64String(salt);
 
                 await _userService.UpdateUserPasswordAsync(user.Data);

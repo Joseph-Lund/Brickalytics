@@ -43,14 +43,14 @@ export class AuthenticationService {
     var logoutModel = new Token(user.accessToken, user.refreshToken, user.refreshTokenExpiration);
 
     this.http.put<Result<Token>>(logoutUrl, logoutModel).subscribe(res => {
-      if (res.code == 200) {
-        this.currentUser = null;
-        // Remove the user from local storage to clear the authentication state.
-        localStorage.removeItem('currentUser');
-        this.router.navigate(['/auth/login']);
-      } else {
-        this.notificationService.openSnackBar(res.message);
-      }
+      this.currentUser = null;
+      // Remove the user from local storage to clear the authentication state.
+      localStorage.removeItem('currentUser');
+      this.router.navigate(['/auth/login']);
+    }, ()=>{
+      this.currentUser = null;
+      localStorage.removeItem('currentUser');
+      this.router.navigate(['/auth/login']);
     });
   }
 

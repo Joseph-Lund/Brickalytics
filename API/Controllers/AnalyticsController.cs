@@ -78,7 +78,7 @@ namespace Brickalytics.Controllers
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
             var admin = await _userService.GetUserByIdAsync(_tokenHelper.GetUserId(accessToken));
             var user = await _userService.GetUserByIdAsync(userId);
-            if (user == null)
+            if (admin == null)
             {
                 throw new Exception();
             }

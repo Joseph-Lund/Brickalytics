@@ -22,10 +22,10 @@ export class DashboardHomeComponent implements OnInit {
   currentUser: CurrentUser | null = null;
   rangeForm!: FormGroup;
   creatorForm!: FormGroup;
-  creators: GenericType[] | null = [];
+  creators: GenericType[] = [];
   owed: Payment | undefined;
-  payments: Payment[] | null = [];
-  productsSold: ProductsSoldParent | null = new ProductsSoldParent(0, 0, []);
+  payments: Payment[] = [];
+  productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
   breakpoint = 0;
   displayedColumns: string[] = ['ProductName', 'ProfitShare', 'Count'];
@@ -65,7 +65,7 @@ export class DashboardHomeComponent implements OnInit {
     if (this.currentUser?.isAdmin) {
       this.userService.getCreatorNames().subscribe(res => {
         if (res.code == 200) {
-          this.creators = res.data;
+          this.creators = res.data!;
           this.createForms();
         } else {
           this.notificationService.openSnackBar(res.message);
@@ -93,7 +93,7 @@ export class DashboardHomeComponent implements OnInit {
           for (var i = 0; i < res.data!.items.length; i++) {
             res.data!.items[i].total = (Math.round(parseFloat(res.data!.items[i].total) * 100) / 100).toFixed(2).toString()
           }
-          this.productsSold = res.data;
+          this.productsSold = res.data!;
         } else {
           this.notificationService.openSnackBar(res.message);
         }
@@ -102,7 +102,7 @@ export class DashboardHomeComponent implements OnInit {
     } else {
       this.dashboardService.getProductsSold(start, end).subscribe(res => {
         if (res.code == 200) {
-          this.productsSold = res.data;
+          this.productsSold = res.data!;
         } else {
           this.notificationService.openSnackBar(res.message);
         }
@@ -114,7 +114,7 @@ export class DashboardHomeComponent implements OnInit {
     this.dashboardService.getPayments(id).subscribe(res => {
       if (res.code == 200) {
         this.owed = res.data!.shift();
-        this.payments = res.data;
+        this.payments = res.data!;
       } else {
         this.notificationService.openSnackBar(res.message);
       }
@@ -136,7 +136,7 @@ export class DashboardHomeComponent implements OnInit {
 
     this.dashboardService.getProductsSoldAdmin(start, end, id).subscribe(res => {
       if (res.code == 200) {
-        this.productsSold = res.data;
+        this.productsSold = res.data!;
       } else {
         this.notificationService.openSnackBar(res.message);
       }
