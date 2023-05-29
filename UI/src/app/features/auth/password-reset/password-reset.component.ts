@@ -62,15 +62,18 @@ export class PasswordResetComponent implements OnInit {
 
     this.userService.updateUserPassword(this.authenticationService.getCurrentUser().id, password)
       .subscribe(
-        () => {
-          this.notificationService.openSnackBar('Your password has been changed.');
-          this.router.navigate(['/auth/login']);
-        },
-        (error: any) => {
-          this.notificationService.openSnackBar(error.error);
-          this.loading = false;
-        }
-      );
+        res => {
+          if (res.code == 200) {
+            this.notificationService.openSnackBar('Your password has been changed.');
+            this.router.navigate(['/auth/login']);
+          } else {
+            this.loading = false;
+            this.notificationService.openSnackBar(res.message);
+          }
+        }, err=>{
+            this.loading = false;
+            console.error(err);
+        });
   }
 
   cancel() {

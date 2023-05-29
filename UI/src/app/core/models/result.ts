@@ -1,4 +1,4 @@
-export class Result<T> {
+export class Result<T = null> {
   code: number;
   message: string;
   data: T | null = null;

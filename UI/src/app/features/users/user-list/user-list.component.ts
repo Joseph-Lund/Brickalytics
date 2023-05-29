@@ -16,10 +16,10 @@ import { UserModal } from 'src/app/features/users/userModal/user-modal.component
 })
 export class UserListComponent implements OnInit {
 
-  userList: User[] = [];
-  roleList: GenericType[] = [];
-  collectionList: GenericType[] = [];
-  productTypeList: GenericType[] = [];
+  userList: User[] | null = [];
+  roleList: GenericType[] | null = [];
+  collectionList: GenericType[] | null = [];
+  productTypeList: GenericType[] | null = [];
   length = 50;
   pageSize = 10;
   pageIndex = 0;
@@ -41,12 +41,12 @@ export class UserListComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Brickalytics - Users');
-    if(window.innerWidth < 992 && !this.isColumnsMobile) {
+    if (window.innerWidth < 992 && !this.isColumnsMobile) {
 
       this.displayedColumns = ['CreatorName', 'Actions'];
       this.isColumnsMobile = true;
 
-    } else if(window.innerWidth >= 992 && this.isColumnsMobile) {
+    } else if (window.innerWidth >= 992 && this.isColumnsMobile) {
 
       this.displayedColumns = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
       this.isColumnsMobile = false;
@@ -56,116 +56,116 @@ export class UserListComponent implements OnInit {
     this.getCollectionsList();
   }
 
-  getUsersList(){
-    this.userService.getUsers().subscribe(users =>{
-      this.userList = users;
-    },
-    err =>{
-      console.error('Error getting user list: ', err)
-      this.notificationService.openSnackBar('Error getting user list');
+  getUsersList() {
+    this.userService.getUsers().subscribe(res => {
+      if(res.code == 200){
+      this.userList = res.data;
+      } else {
+      this.notificationService.openSnackBar(res.message);
+      }
     });
   }
-  getRolesList(){
-    this.userService.getRoles().subscribe(roles =>{
-      this.roleList = roles;
-    },
-    err =>{
-      console.error('Error getting role list: ', err)
-      this.notificationService.openSnackBar('Error getting role list');
+  getRolesList() {
+    this.userService.getRoles().subscribe(res => {
+      if(res.code == 200){
+      this.roleList = res.data;
+      } else {
+      this.notificationService.openSnackBar(res.message);
+      }
     });
   }
-  getCollectionsList(){
-    this.userService.getCollections().subscribe(collections =>{
-      this.collectionList = collections;
-    },
-    err =>{
-      console.error('Error getting role list: ', err)
-      this.notificationService.openSnackBar('Error getting role list');
+  getCollectionsList() {
+    this.userService.getCollections().subscribe(res => {
+      if(res.code == 200){
+      this.collectionList = res.data;
+      } else {
+      this.notificationService.openSnackBar(res.message);
+      }
     });
   }
-  getProductTypeList(){
-    this.productTypeService.getProductTypes().subscribe(productTypes =>{
-      this.productTypeList = productTypes;
-    },
-    err =>{
-      console.error('Error getting product type list: ', err)
-      this.notificationService.openSnackBar('Error getting product type list');
+  getProductTypeList() {
+    this.productTypeService.getProductTypes().subscribe(res => {
+      if(res.code == 200){
+      this.productTypeList = res.data;
+      } else {
+      this.notificationService.openSnackBar(res.message);
+      }
     });
   }
-  addUser(user: User){
-    this.userService.addUser(user).subscribe(userId =>{
-      user.id = userId;
-      this.userList.push(user);
-    },
-    err =>{
-      console.error('Error adding user: ', err)
-      this.notificationService.openSnackBar('Error adding user');
+  addUser(user: User) {
+    this.userService.addUser(user).subscribe(res => {
+      if (res.code == 200) {
+        user.id = res.data;
+        this.userList!.push(user);
+      } else {
+        this.notificationService.openSnackBar(res.message);
+      }
     });
   }
-  updateUser(user: User){
-    this.userService.updateUser(user).subscribe(userId =>{
-      this.getUsersList();
-    },
-    err =>{
-      console.error('Error updating user: ', err)
-      this.notificationService.openSnackBar('Error updating user');
+  updateUser(user: User) {
+    this.userService.updateUser(user).subscribe(res => {
+      if (res.code == 200) {
+        this.getUsersList();
+      } else {
+        this.notificationService.openSnackBar(res.message)
+      }
     });
   }
-  updateUserPassword(user: User, password: string){
-    this.userService.updateUserPassword(user.id!, password).subscribe(userId =>{},
-    err =>{
-      console.error('Error updating user password: ', err)
-      this.notificationService.openSnackBar('Error updating user password');
+  updateUserPassword(user: User, password: string) {
+    this.userService.updateUserPassword(user.id!, password).subscribe(res => {
+      if (res.code != 200) {
+        this.notificationService.openSnackBar(res.message);
+      }
     });
   }
-  getRole(id:number | null){
-    for(var role of this.roleList){
-      if(role.id == id){
+  getRole(id: number | null) {
+    for (var role of this.roleList!) {
+      if (role.id == id) {
         return role.name;
       }
     }
     return "None";
   }
-  getCollection(id:number){
-    if(id){
-      for(var collection of this.collectionList){
-        if(collection.id == id){
+  getCollection(id: number) {
+    if (id) {
+      for (var collection of this.collectionList!) {
+        if (collection.id == id) {
           return collection.name;
         }
       }
     }
     return "None";
   }
-  openUserModal(user: User | null = null){
+  openUserModal(user: User | null = null) {
 
-    if(!user){
+    if (!user) {
       user = new User(null, true, 2, 0, '', null);
     }
 
     const dialogRef = this.dialog.open(UserModal, {
-      data: {user: user, roleList: this.roleList, collectionList: this.collectionList}
+      data: { user: user, roleList: this.roleList, collectionList: this.collectionList }
     });
 
     dialogRef.afterClosed().subscribe(_user => {
-       this.getUsersList();
+      this.getUsersList();
     });
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
 
-  if(event.target.innerWidth < 992 && !this.isColumnsMobile) {
+    if (event.target.innerWidth < 992 && !this.isColumnsMobile) {
 
-    this.displayedColumns = ['CreatorName', 'Actions'];
-    this.isColumnsMobile = true;
+      this.displayedColumns = ['CreatorName', 'Actions'];
+      this.isColumnsMobile = true;
 
-  } else if(event.target.innerWidth >= 992 && this.isColumnsMobile) {
+    } else if (event.target.innerWidth >= 992 && this.isColumnsMobile) {
 
-    this.displayedColumns = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
-    this.isColumnsMobile = false;
+      this.displayedColumns = ['CreatorName', 'Active', 'Role', 'Collection', 'Actions'];
+      this.isColumnsMobile = false;
+    }
+
   }
-
-}
 
 
 }

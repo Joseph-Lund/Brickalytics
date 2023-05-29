@@ -4,6 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from 'src/app/core/services/user.service';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { CurrentUser } from 'src/app/core/models/currentUser';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
   selector: 'app-reset-password-modal',
@@ -15,12 +16,14 @@ export class ResetPasswordModal implements OnInit {
   user: CurrentUser;
 
   userForm!: FormGroup;
-
+  hideNew: boolean = true;
+  hideConfirm: boolean = true;
   constructor(
     public dialogRef: MatDialogRef<ResetPasswordModal>,
     private fb: FormBuilder,
-    private  authService: AuthenticationService,
-    private  userService: UserService
+    private authService: AuthenticationService,
+    private userService: UserService,
+    private notificationService: NotificationService
   ) {
     this.user = this.authService.getCurrentUser();
   }
@@ -35,33 +38,47 @@ export class ResetPasswordModal implements OnInit {
 
   submit() {
     //TODO: check if old password is correct in api
-    const oldPassword = this.userForm.get('oldPassword')?.value;
-    const password = this.userForm.get('password')?.value;
-    const confirmPassword = this.userForm.get('confirmPassword')?.value;
-    if(password == confirmPassword){
-        this.userService.updateUserPassword(this.user.id!, password).subscribe(() =>{
+      const password = this.userForm.get('password')?.value;
+      const confirmPassword = this.userForm.get('confirmPassword')?.value;
+      if (password == confirmPassword) {
+        this.userService.updateUserPassword(this.user.id!, password).subscribe(res => {
+          if(res.code == 200){
           this.dialogRef.close();
+          } else {
+            this.notificationService.openSnackBar(res.message);
+          }
         });
     }
+
   }
 
   private createForm() {
     this.userForm = this.fb.group({
-      oldPassword: new FormControl('', Validators.required),
+      // oldPassword: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       confirmPassword: new FormControl('', Validators.required)
-    }, { validators: this.checkPasswords });
-
+    }, { validators: this.ConfirmedValidator('password', 'confirmPassword'), });
   }
 
-  private checkPasswords: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
-    let pass = group.get('password')?.value;
-    let confirmPass = group.get('confirmPassword')?.value;
-    if(pass || confirmPass){
-    return pass === confirmPass ? null : { notSame: true };
-    }else{
-      return null;
-    }
+  private ConfirmedValidator(controlName: string, matchingControlName: string) {
+    return (formGroup: FormGroup) => {
+      const control = formGroup.controls[controlName];
+      const matchingControl = formGroup.controls[matchingControlName];
+      if (
+        matchingControl.errors &&
+        !matchingControl.errors.confirmedValidator
+      ) {
+        return;
+      }
+      if (control.value !== matchingControl.value) {
+        matchingControl.setErrors({ confirmedValidator: true });
+      } else {
+        matchingControl.setErrors(null);
+      }
+    };
   }
-
+  // private checkOldPassword(oldPassword: string): boolean {
+  //   //TODO: create API endpoint to check if old password is correct
+  //   return true;
+  // }
 }

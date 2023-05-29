@@ -5,6 +5,7 @@ import { User } from '../models/user';
 import { Observable } from 'rxjs';
 import { UserRate } from '../models/userRate';
 import { GenericType } from '../models/genericType';
+import { Result } from '../models/result';
 
 @Injectable({
   providedIn: 'root'
@@ -13,48 +14,48 @@ export class UserService {
   private readonly apiUrl = environment.apiUrl + '/User';
   constructor(private http: HttpClient) { }
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl);
+  getUsers(): Observable<Result<User[]>> {
+    return this.http.get<Result<User[]>>(this.apiUrl);
   }
-  getCreatorNames(): Observable<GenericType[]> {
+  getCreatorNames(): Observable<Result<GenericType[]>> {
     const url = `${this.apiUrl}/Names`;
-    return this.http.get<GenericType[]>(url);
+    return this.http.get<Result<GenericType[]>>(url);
   }
-  getRoles(): Observable<GenericType[]> {
+  getRoles(): Observable<Result<GenericType[]>> {
     const url = `${this.apiUrl}/Roles`;
-    return this.http.get<GenericType[]>(url);
+    return this.http.get<Result<GenericType[]>>(url);
   }
-  getCollections(): Observable<GenericType[]> {
+  getCollections(): Observable<Result<GenericType[]>> {
     const url = `${this.apiUrl}/Collections`;
-    return this.http.get<GenericType[]>(url);
+    return this.http.get<Result<GenericType[]>>(url);
   }
 
-  getUserById(id: number): Observable<User> {
+  getUserById(id: number): Observable<Result<User>> {
     const url = `${this.apiUrl}/${id}`;
-    return this.http.get<User>(url);
+    return this.http.get<Result<User>>(url);
   }
 
-  addUser(user: User): Observable<number> {
-    return this.http.post<number>(this.apiUrl, user);
+  addUser(user: User): Observable<Result<number>> {
+    return this.http.post<Result<number>>(this.apiUrl, user);
   }
 
-  updateUser(user: User): Observable<void> {
-    return this.http.put<void>(this.apiUrl, user);
+  updateUser(user: User): Observable<Result> {
+    return this.http.put<Result>(this.apiUrl, user);
   }
 
-  updateUserPassword(id: number, password: string): Observable<void> {
+  updateUserPassword(id: number, password: string): Observable<Result> {
     const url = `${this.apiUrl}/Password`;
     const body = { id: id, password: password };
-    return this.http.put<void>(url, body);
+    return this.http.put<Result>(url, body);
   }
 
-  addUserRate(userRate: UserRate): Observable<void> {
+  addUserRate(userRate: UserRate): Observable<Result> {
     const url = `${this.apiUrl}/Rate`;
-    return this.http.put<void>(url, userRate);
+    return this.http.put<Result>(url, userRate);
   }
 
-  deleteUserRate(userRate: UserRate): Observable<void> {
+  deleteUserRate(userRate: UserRate): Observable<Result> {
     const url = `${this.apiUrl}/Rate`;
-    return this.http.delete<void>(url, { body: userRate });
+    return this.http.delete<Result>(url, { body: userRate });
   }
 }
