@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
     selector: 'app-login',
@@ -16,7 +17,8 @@ export class LoginComponent implements OnInit {
 
     constructor(private router: Router,
       private titleService: Title,
-        private authenticationService: AuthenticationService) {
+        private authenticationService: AuthenticationService,
+        private notificationService: NotificationService) {
     }
 
     ngOnInit() {
@@ -44,10 +46,11 @@ export class LoginComponent implements OnInit {
         },
         err => {
           this.loading = false;
+          if(err.error.includes("System.UnauthorizedAccessException")){
+            this.notificationService.openSnackBar("Incorrect Username or Password");
+          } else {
+            this.notificationService.openSnackBar("An Uknown Error Has Occured");
+          }
         });
     }
-
-    // resetPassword() {
-    //     this.router.navigate(['/auth/password-reset-request']);
-    // }
 }
