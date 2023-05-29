@@ -28,7 +28,7 @@ namespace Brickalytics.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<LoginResponse?> Login(LoginInfo loginInfo)
+        public async Task<Result<LoginResponse>> Login(LoginInfo loginInfo)
         {
             try
             {
@@ -43,16 +43,24 @@ namespace Brickalytics.Controllers
                     user.RefreshToken = tokens.RefreshToken;
                     user.RefreshTokenExpiration = tokens.RefreshTokenExpiration;
                     await _userService.UpdateUserRefreshTokenAsync(user);
-
-                    return new LoginResponse(){
-                        Id = user.Id,
-                        CreatorName = user.CreatorName,
-                        Email = user.Email,
-                        IsAdmin = user.RoleId != (int)Roles.User,
-                        AccessToken = tokens.AccessToken,
-                        RefreshToken = tokens.RefreshToken,
-                        RefreshTokenExpiration = tokens.RefreshTokenExpiration
-                    };
+                    try
+                    {
+                        var data = new LoginResponse()
+                        {
+                            Id = user.Id,
+                            CreatorName = user.CreatorName,
+                            Email = user.Email,
+                            IsAdmin = user.RoleId != (int)Roles.User,
+                            AccessToken = tokens.AccessToken,
+                            RefreshToken = tokens.RefreshToken,
+                            RefreshTokenExpiration = tokens.RefreshTokenExpiration
+                        };
+                        return new Result<LoginResponse> { Code = 200, Message = "Success", Data = data };
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Result<LoginResponse> { Code = 500, Message = ex.Message };
+                    }
                 }
                 else
                 {
@@ -67,33 +75,49 @@ namespace Brickalytics.Controllers
         }
         [HttpPut]
         [Route("Logout")]
-        public async Task Logout(Tokens tokens)
+        public async Task<Result> Logout(Tokens tokens)
         {
-            var accessTokenUserId = ValidateToken(tokens.AccessToken!);
-            var refreshTokenUserId = ValidateToken(tokens.RefreshToken!);
-            if (accessTokenUserId != null && refreshTokenUserId != null)
+            try
             {
-                var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
-                user.RefreshToken = null;
-                user.RefreshTokenExpiration = null;
-                await _userService.UpdateUserRefreshTokenAsync(user);
+                var accessTokenUserId = ValidateToken(tokens.AccessToken!);
+                var refreshTokenUserId = ValidateToken(tokens.RefreshToken!);
+                if (accessTokenUserId != null && refreshTokenUserId != null)
+                {
+                    var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
+                    user.RefreshToken = null;
+                    user.RefreshTokenExpiration = null;
+                    await _userService.UpdateUserRefreshTokenAsync(user);
+                }
+                return new Result { Code = 200, Message = "Success" };
+            }
+            catch (Exception ex)
+            {
+                return new Result { Code = 500, Message = ex.Message };
             }
         }
         [HttpPost]
         [Route("Refresh")]
-        public async Task<Tokens?> Refresh(Tokens tokens)
+        public async Task<Result<Tokens>> Refresh(Tokens tokens)
         {
-            //TODO: Refresh token should check with sql db if it is the same token assigned to the user last
-            var accessTokenUserId = ValidateToken(tokens.AccessToken!);
-            var refreshTokenUserId = ValidateToken(tokens.RefreshToken!);
-            if (accessTokenUserId != null && refreshTokenUserId != null)
+            try
             {
-                var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
-                return GenerateTokens(user.Id, user.RoleId);
+                //TODO: Refresh token should check with sql db if it is the same token assigned to the user last
+                var accessTokenUserId = ValidateToken(tokens.AccessToken!);
+                var refreshTokenUserId = ValidateToken(tokens.RefreshToken!);
+                if (accessTokenUserId != null && refreshTokenUserId != null)
+                {
+                    var user = await _userService.GetUserByIdAsync((int)accessTokenUserId);
+                    var data = GenerateTokens(user.Id, user.RoleId);
+                    return new Result<Tokens> { Code = 200, Message = "Success", Data = data };
+                }
+                else
+                {
+                    return new Result<Tokens> { Code = 500, Message = "Could not validate tokens" };
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return null;
+                return new Result<Tokens> { Code = 500, Message = ex.Message };
             }
 
         }

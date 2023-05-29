@@ -25,15 +25,26 @@ namespace Brickalytics.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Role>> GetRoles()
+        public async Task<Result<List<Role>>> GetRoles()
         {
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
-            if(_tokenHelper.IsUserAdmin(accessToken))
+            try
             {
-                var result = await _roleService.GetRolesAsync();
-                return result;
+                if (_tokenHelper.IsUserAdmin(accessToken))
+                {
+                    var data = await _roleService.GetRolesAsync();
+                    return new Result<List<Role>>() { Code = 200, Message = "Success", Data = data };
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("Not authorized to get Roles");
+                }
             }
-            throw new UnauthorizedAccessException();
+            catch (Exception ex)
+            {
+
+                return new Result<List<Role>>() { Code = 500, Message = ex.Message };
+            }
         }
     }
 }

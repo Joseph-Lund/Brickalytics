@@ -24,15 +24,26 @@ namespace Brickalytics.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ProductType>> GetProductTypes()
+        public async Task<Result<List<ProductType>>> GetProductTypes()
         {
             var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Substring(7);
-            if(_tokenHelper.IsUserAdmin(accessToken))
+            try
             {
-                var result = await _productTypeService.GetProductTypesAsync();
-                return result;
+                if (_tokenHelper.IsUserAdmin(accessToken))
+                {
+                    var data = await _productTypeService.GetProductTypesAsync();
+                    return new Result<List<ProductType>>() { Code = 200, Message = "Success", Data = data };
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("Not authorized to get Product Types");
+                }
             }
-            throw new UnauthorizedAccessException();
+            catch (Exception ex)
+            {
+
+                return new Result<List<ProductType>>() { Code = 500, Message = ex.Message };
+            }
         }
     }
 }
