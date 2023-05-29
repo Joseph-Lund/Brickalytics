@@ -70,6 +70,8 @@ export class UserListComponent implements OnInit {
       if(res.code == 200){
       this.roleList = res.data!;
       } else {
+
+      console.error(res.code, res.message);
       this.notificationService.openSnackBar(res.message);
       }
     });

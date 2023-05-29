@@ -230,7 +230,7 @@ namespace Brickalytics.Controllers
                 if (_tokenHelper.IsUserAdmin(accessToken))
                 {
                     var data = await _roleService.GetRolesAsync();
-                    return new Result<List<Role>>() { Code = 500, Message = "Success", Data = data };
+                    return new Result<List<Role>>() { Code = 200, Message = "Success", Data = data };
                 }
                 throw new UnauthorizedAccessException();
             }
@@ -250,7 +250,7 @@ namespace Brickalytics.Controllers
                 if (_tokenHelper.IsUserAdmin(accessToken))
                 {
                     var data = await _productTypeService.GetProductTypesAsync();
-                    return new Result<List<ProductType>>() { Code = 500, Message = "Success", Data = data };
+                    return new Result<List<ProductType>>() { Code = 200, Message = "Success", Data = data };
                 }
                 throw new UnauthorizedAccessException();
             }

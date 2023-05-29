@@ -43,33 +43,26 @@ namespace Brickalytics.Controllers
                     user.RefreshToken = tokens.RefreshToken;
                     user.RefreshTokenExpiration = tokens.RefreshTokenExpiration;
                     await _userService.UpdateUserRefreshTokenAsync(user);
-                    try
+                    var data = new LoginResponse()
                     {
-                        var data = new LoginResponse()
-                        {
-                            Id = user.Id,
-                            CreatorName = user.CreatorName,
-                            Email = user.Email,
-                            IsAdmin = user.RoleId != (int)Roles.User,
-                            AccessToken = tokens.AccessToken,
-                            RefreshToken = tokens.RefreshToken,
-                            RefreshTokenExpiration = tokens.RefreshTokenExpiration
-                        };
-                        return new Result<LoginResponse> { Code = 200, Message = "Success", Data = data };
-                    }
-                    catch (Exception ex)
-                    {
-                        return new Result<LoginResponse> { Code = 500, Message = ex.Message };
-                    }
+                        Id = user.Id,
+                        CreatorName = user.CreatorName,
+                        Email = user.Email,
+                        IsAdmin = user.RoleId != (int)Roles.User,
+                        AccessToken = tokens.AccessToken,
+                        RefreshToken = tokens.RefreshToken,
+                        RefreshTokenExpiration = tokens.RefreshTokenExpiration
+                    };
+                    return new Result<LoginResponse> { Code = 200, Message = "Success", Data = data };
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new Exception("Invalid Username or Password");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw new UnauthorizedAccessException("Invalid username or password");
+                return new Result<LoginResponse> { Code = 500, Message = ex.Message };
             }
 
         }

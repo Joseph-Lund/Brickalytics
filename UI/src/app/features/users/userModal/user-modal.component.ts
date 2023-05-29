@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { GenericType } from 'src/app/core/models/genericType';
 import { User } from 'src/app/core/models/user';
 import { UserRatesModal } from '../userRatesModal/user-rates-modal.component';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-user-modal',
@@ -21,6 +22,7 @@ export class UserModal implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<UserModal>,
+    private userService: UserService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -42,6 +44,11 @@ export class UserModal implements OnInit {
     const creatorName = this.userForm.get('creatorName')?.value;
     const password = this.userForm.get('password')?.value;
     const confirmPassword = this.userForm.get('confirmPassword')?.value;
+    if(password == confirmPassword && (password != null || password != "" || confirmPassword != null || confirmPassword != "" )){
+      this.userService.updateUserPassword(this.user.id!, password).subscribe(
+
+      );
+    }
     const active = this.userForm.get('active')?.value;
     const roleId = this.userForm.get('roleId')?.value;
     const collectionId = this.userForm.get('collectionId')?.value;
@@ -63,8 +70,8 @@ export class UserModal implements OnInit {
   private createForm() {
     this.userForm = this.fb.group({
       creatorName: new FormControl(this.user.creatorName, Validators.required),
-      password: new FormControl('', Validators.required),
-      confirmPassword: new FormControl('', Validators.required),
+      password: new FormControl(''),
+      confirmPassword: new FormControl(''),
       roleId: new FormControl(this.user.roleId, Validators.required),
       active: new FormControl(this.user.active, Validators.required),
       collectionId: new FormControl(this.user.collectionId, Validators.required)

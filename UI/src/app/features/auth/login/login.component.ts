@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.authenticationService.login(username.toLowerCase(), password)
       .subscribe(res => {
+        this.loading = false;
         if (res.code == 200) {
           this.authenticationService.setCurrentUser(res.data!);
           this.router.navigate(['/dashboard']);
