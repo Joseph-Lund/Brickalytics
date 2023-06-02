@@ -49,7 +49,6 @@ export class DashboardHomeComponent implements OnInit {
     this.isAdmin = this.currentUser.isAdmin;
     this.titleService.setTitle('Brickalytics - Dashboard');
     this.getCreators();
-    this.onResizeInit();
   }
 
   getUserById(id: number) {
@@ -118,6 +117,8 @@ export class DashboardHomeComponent implements OnInit {
       } else {
         this.notificationService.openSnackBar(res.message);
       }
+    }, ()=>{},()=>{
+      this.onResizeInit();
     });
   }
 
