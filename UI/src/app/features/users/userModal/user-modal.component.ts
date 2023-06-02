@@ -17,7 +17,8 @@ export class UserModal implements OnInit {
   roleList: GenericType[] = [];
   collectionList: GenericType[] = [];
   activeStateList: any[] = [{ id: true, name: "True" }, { id: false, name: "False" }];
-
+  hidePass: boolean = true;
+  hideConfirm: boolean = true;
   userForm!: FormGroup;
 
   constructor(
@@ -57,7 +58,6 @@ export class UserModal implements OnInit {
     }
   }
   openUserModal(){
-
     const dialogRef = this.dialog.open(UserRatesModal, {
       data: {user: this.user, roleList: this.roleList, collectionList: this.collectionList}
     });

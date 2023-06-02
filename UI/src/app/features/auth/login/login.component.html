@@ -15,8 +15,9 @@
                 </mat-form-field>
 
                 <mat-form-field class="full-width">
-                    <input id="passwordInput" matInput placeholder="Password" formControlName="password" type="password"
+                    <input id="passwordInput" matInput placeholder="Password" formControlName="password" [type]="hide ? 'password' : 'text'"
                         autocomplete="current-password">
+                        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                     <mat-error id="requiredPasswordError" *ngIf="loginForm.controls['password'].hasError('required')">
                         Password is
                         <strong>required</strong>

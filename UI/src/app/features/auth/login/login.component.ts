@@ -14,6 +14,7 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
   loading!: boolean;
+  hide: boolean = true;
 
   constructor(private router: Router,
     private titleService: Title,
