@@ -110,6 +110,7 @@ namespace Brickalytics.Services
         }
         private List<Order> GetOrderCountsDict(IEnumerable<ShopifySharp.Order> orders, List<Order> analytics)
         {
+            orders = orders.Where(x => x.Refunds.Count() > 0);
             foreach (var order in orders)
             {
                 foreach (var lineItem in order.LineItems)
