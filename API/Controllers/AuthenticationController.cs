@@ -35,7 +35,7 @@ namespace Brickalytics.Controllers
                 var user = await _userService.GetUserByCreatorNameAsync(loginInfo.CreatorName!);
                 if (user == null)
                 {
-                    throw new Exception();
+                    throw new Exception("Invalid Username or Password");
                 }
                 if (VerifyPassword(loginInfo.Password!, user.Hash!, user.Salt!))
                 {
