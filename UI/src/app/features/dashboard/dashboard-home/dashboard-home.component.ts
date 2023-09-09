@@ -143,7 +143,13 @@ export class DashboardHomeComponent implements OnInit {
       }
     })
   }
-
+  addPayment(){
+    var id = this.creatorForm.get('id')?.value;
+    var amount: number = this.owed!.paymentAmount
+    this.dashboardService.addPayment(id, amount).subscribe(()=>{
+      this.getPayments();
+    })
+  }
   private createForms() {
     // default to the last week
     var lastMonday = this.getMonday(this.getLastWeek());

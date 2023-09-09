@@ -1,116 +1,179 @@
-<mat-tab-group>
-  <mat-tab label="Analytics">
-    <div class="container" fxLayout="row" fxLayoutAlign="center none">
-      <div fxFlex="50%" class="text-center no-records animate">
-        <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
-          <mat-label>Creator</mat-label>
-          <mat-select formControlName="id">
-            <mat-option *ngFor="let creator of creators" [value]="creator.id">
-              {{creator.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Enter a date range</mat-label>
-          <mat-date-range-input [formGroup]="rangeForm" [rangePicker]="picker">
-            <input matStartDate formControlName="start" placeholder="Start date">
-            <input matEndDate formControlName="end" placeholder="End date">
-          </mat-date-range-input>
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
-          <mat-error *ngIf="rangeForm.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
-          <mat-error *ngIf="rangeForm.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
-        </mat-form-field>
-        <button mat-flat-button color="accent" (click)="getProductsSold()">Search</button>
-        <div class="row col-md-12">
-          <div class="col-md-6 col-sm-6 col-xs-6">
-            <mat-card-title>
-              <b>Products Sold</b>
-            </mat-card-title>
-            <mat-card-title>
-              {{productsSold.productsSoldTotal}}
-            </mat-card-title>
-          </div>
-          <div class="col-md-6 col-sm-6 col-xs-6">
-            <mat-card-title>
-              <b>Total</b>
-            </mat-card-title>
-            <mat-card-title class="product-total">
-              ${{productsSold.productsSoldProfit}}
-            </mat-card-title>
-          </div>
-        </div>
-          <table mat-table [dataSource]="productsSold.items" class="example-table" matSort matSortActive="created"
-            matSortDisableClear matSortDirection="desc">
-            <!-- Number Column -->
-            <ng-container matColumnDef="ProductName">
-              <th mat-header-cell *matHeaderCellDef>Products Name</th>
-              <td mat-cell *matCellDef="let row">{{row.itemName}}</td>
-            </ng-container>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<body class="dashboard">
+	<header>
+		<div class="container">
+			<div class="text-center">
+				<a href="#"><img src="../../../../assets/images/logo.png"></a>
+			</div>
+		</div>
+	</header>
 
-            <!-- Title Column -->
-            <ng-container matColumnDef="ProfitShare">
-              <th mat-header-cell *matHeaderCellDef>Profit Share</th>
-              <td mat-cell *matCellDef="let row" class="product-total">${{row.total}}</td>
-            </ng-container>
+	<div class="container">
+		<div class="tab-nav">
+			<ul>
+				<li class="active" id="analytics">Analytics</li>
+				<li id="payments">Payments</li>
+				<li id="users">Users</li>
+				<li id="settings">Settings</li>
+			</ul>
+		</div>
 
-            <!-- State Column -->
-            <ng-container matColumnDef="Count">
-              <th mat-header-cell *matHeaderCellDef>Count</th>
-              <td mat-cell *matCellDef="let row">{{row.count}}</td>
-            </ng-container>
+		<!--analytics-->
+		<div class="tab-content analytics">
+			<div class="d-flex">
+				<div class="single-box w-30">
+					Analytics
+				</div>
+				<div class="single-box w-70">
+				</div>
+			</div>
+			<div class="d-flex mt1">
+				<div class="single-box w-100">
+				</div>
+			</div>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
-        </div>
-      </div>
-  </mat-tab>
-  <mat-tab label="Payments">
-    <div class="container" fxLayout="row" fxLayoutAlign="center none">
-      <div fxFlex="100%" class="text-center no-records animate">
-        <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
-          <mat-label>Creator</mat-label>
-          <mat-select formControlName="id">
-            <mat-option *ngFor="let creator of creators" [value]="creator.id">
-              {{creator.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button [hidden]="!isAdmin" mat-flat-button color="accent" (click)="getPayments()">Search</button>
-      </div>
-      <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
-        <mat-grid-tile [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">${{owed?.paymentAmount}}</b>
-                <button [hidden]="!isAdmin" mat-button color="primary" (click)="getProductsSold()">Pay Creator</button>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>Owed</b>
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-      </mat-grid-list>
-      <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
-        <mat-grid-tile *ngFor="let payment of payments" [colspan]="1" [rowspan]="1">
-          <mat-card class="dashboard-card">
-            <mat-card-header class="dashboard-card-header">
-              <mat-card-title>
-                <b class="product-total">${{payment.paymentAmount}}</b>
-              </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>{{payment.formattedDate}}</b>
-              </mat-card-subtitle>
-              <mat-card-subtitle>
-                {{payment.formattedTime}}
-              </mat-card-subtitle>
-            </mat-card-header>
-          </mat-card>
-        </mat-grid-tile>
-      </mat-grid-list>
-    </div>
-  </mat-tab>
-</mat-tab-group>
+			<div class="four-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+
+			<div class="two-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+		</div>
+
+
+
+		<!--payments-->
+		<div class="tab-content payments hide">
+			<div class="d-flex">
+				<div class="single-box w-30">
+					Payments
+				</div>
+				<div class="single-box w-70">
+				</div>
+			</div>
+			<div class="d-flex mt1">
+				<div class="single-box w-100">
+				</div>
+			</div>
+
+			<div class="four-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+
+			<div class="two-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+		</div>
+
+
+
+		<!--mediakit-->
+		<div class="tab-content users hide">
+			<div class="d-flex">
+				<div class="single-box w-30">
+					Users
+				</div>
+				<div class="single-box w-70">
+				</div>
+			</div>
+			<div class="d-flex mt1">
+				<div class="single-box w-100">
+				</div>
+			</div>
+
+			<div class="four-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+
+			<div class="two-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+		</div>
+
+
+
+		<!--Settings-->
+		<div class="tab-content settings hide">
+			<div class="d-flex">
+				<div class="single-box w-30">
+					Settings
+				</div>
+				<div class="single-box w-70">
+				</div>
+			</div>
+			<div class="d-flex mt1">
+				<div class="single-box w-100">
+				</div>
+			</div>
+
+			<div class="four-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+
+			<div class="two-col mt1">
+				<div class="single-box">
+				</div>
+				<div class="single-box">
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(".tab-nav ul li").on('click', function(event){
+			var id = $(this).attr('id');
+			$(".tab-nav ul li").removeClass('active');
+			$("#"+id).addClass('active');
+
+			$('.tab-content').hide();
+			$("."+id).show();
+		});
+	</script>
+</body>
+</html>
