@@ -27,6 +27,7 @@ export class DashboardHomeComponent implements OnInit {
   payments: Payment[] = [];
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
+  selectedTab: string = 'Analytics'
   breakpoint = 0;
   displayedColumns: string[] = ['ProductName', 'ProfitShare', 'Count'];
 
@@ -149,6 +150,15 @@ export class DashboardHomeComponent implements OnInit {
     this.dashboardService.addPayment(id, amount).subscribe(()=>{
       this.getPayments();
     })
+  }
+  toggleTab(tabName: string){
+    this.selectedTab = tabName;
+    // var id = $(this).attr('id');
+    // $(".tab-nav ul li").removeClass('active');
+    // $("#"+id).addClass('active');
+
+    // $('.tab-content').hide();
+    // $("."+id).show();
   }
   private createForms() {
     // default to the last week

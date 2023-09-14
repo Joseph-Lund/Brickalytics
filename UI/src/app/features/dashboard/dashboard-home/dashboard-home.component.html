@@ -20,15 +20,15 @@
 	<div class="container">
 		<div class="tab-nav">
 			<ul>
-				<li class="active" id="analytics">Analytics</li>
-				<li id="payments">Payments</li>
-				<li id="users">Users</li>
-				<li id="settings">Settings</li>
+				<li [class.active] = "selectedTab === 'Analytics'" id="analytics" (click)="toggleTab('Analytics')">Analytics</li>
+				<li [class.active] = "selectedTab === 'Payments'" id="payments" (click)="toggleTab('Payments')">Payments</li>
+				<li [class.active] = "selectedTab === 'Users'" id="users" (click)="toggleTab('Users')">Users</li>
+				<li [class.active] = "selectedTab === 'Settings'" id="settings" (click)="toggleTab('Settings')">Settings</li>
 			</ul>
 		</div>
 
 		<!--analytics-->
-		<div class="tab-content analytics">
+		<div class="tab-content analytics" [class.hide] = "selectedTab !== 'Analytics'">
 			<div class="d-flex">
 				<div class="single-box w-30">
 					Analytics
@@ -63,7 +63,7 @@
 
 
 		<!--payments-->
-		<div class="tab-content payments hide">
+		<div class="tab-content payments" [class.hide] = "selectedTab !== 'Payments'">
 			<div class="d-flex">
 				<div class="single-box w-30">
 					Payments
@@ -98,7 +98,7 @@
 
 
 		<!--mediakit-->
-		<div class="tab-content users hide">
+		<div class="tab-content users"  [class.hide] = "selectedTab !== 'Users'">
 			<div class="d-flex">
 				<div class="single-box w-30">
 					Users
@@ -133,7 +133,7 @@
 
 
 		<!--Settings-->
-		<div class="tab-content settings hide">
+		<div class="tab-content settings"  [class.hide] = "selectedTab !== 'Settings'">
 			<div class="d-flex">
 				<div class="single-box w-30">
 					Settings
@@ -165,15 +165,5 @@
 			</div>
 		</div>
 	</div>
-	<script>
-		$(".tab-nav ul li").on('click', function(event){
-			var id = $(this).attr('id');
-			$(".tab-nav ul li").removeClass('active');
-			$("#"+id).addClass('active');
-
-			$('.tab-content').hide();
-			$("."+id).show();
-		});
-	</script>
 </body>
 </html>
