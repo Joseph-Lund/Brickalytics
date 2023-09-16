@@ -8,7 +8,6 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ProductsSoldParent } from 'src/app/core/models/productsSoldParent';
 import { GenericType } from 'src/app/core/models/genericType';
 import { Payment } from 'src/app/core/models/payment';
-import { ProductsSoldChild } from 'src/app/core/models/productsSoldChild';
 import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
@@ -49,7 +48,7 @@ export class DashboardHomeComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
     this.isAdmin = this.currentUser.isAdmin;
     this.titleService.setTitle('Brickalytics - Dashboard');
-    this.getCreators();
+    this.toggleTab('Analytics');
   }
 
   getUserById(id: number) {
@@ -153,12 +152,19 @@ export class DashboardHomeComponent implements OnInit {
   }
   toggleTab(tabName: string){
     this.selectedTab = tabName;
-    // var id = $(this).attr('id');
-    // $(".tab-nav ul li").removeClass('active');
-    // $("#"+id).addClass('active');
-
-    // $('.tab-content').hide();
-    // $("."+id).show();
+    switch(tabName){
+      case 'Analytics':
+        this.getCreators();
+        break;
+      case 'Payments':
+        break;
+      case 'Users':
+        break;
+      case 'Settings':
+        break;
+      default:
+        break;
+    }
   }
   private createForms() {
     // default to the last week
