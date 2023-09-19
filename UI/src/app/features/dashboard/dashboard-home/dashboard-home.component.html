@@ -1,117 +1,272 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;600&display=swap"
+    rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 </head>
+
 <body class="dashboard">
-	<header>
-		<div class="container">
-			<div class="text-center">
-				<a href="#"><img src="../../../../assets/images/logo.png"></a>
-			</div>
-		</div>
-	</header>
+  <header>
+    <div class="container">
+      <div class="text-center">
+        <a href="#"><img src="../../../../assets/images/logo.png"></a>
+      </div>
+    </div>
+  </header>
 
-	<div class="container">
-		<div class="tab-nav">
-			<ul>
-				<li [class.active] = "selectedTab === 'Analytics'" id="analytics" (click)="toggleTab('Analytics')">Analytics</li>
-				<li [class.active] = "selectedTab === 'Payments'" id="payments" (click)="toggleTab('Payments')">Payments</li>
-				<li [class.active] = "selectedTab === 'Users'" id="users" (click)="toggleTab('Users')">Users</li>
-				<li [class.active] = "selectedTab === 'Settings'" id="settings" (click)="toggleTab('Settings')">Settings</li>
-			</ul>
-		</div>
+  <div class="container">
+    <div class="tab-nav">
+      <ul>
+        <li [class.active]="selectedTab === 'Analytics'" id="analytics" (click)="toggleTab('Analytics')">Analytics</li>
+        <li [class.active]="selectedTab === 'Payments'" id="payments" (click)="toggleTab('Payments')">Payments</li>
+        <li [class.active]="selectedTab === 'Users'" id="users" (click)="toggleTab('Users')" [hidden]="!isAdmin" >Users</li>
+        <li [class.active]="selectedTab === 'Settings'" id="settings" (click)="toggleTab('Settings')">Settings</li>
+      </ul>
+    </div>
 
-		<!--analytics-->
-		<div class="tab-content analytics" [class.hide] = "selectedTab !== 'Analytics'">
-			<div class="d-flex">
-				<div class="single-box w-30">
-					Analytics
-				</div>
+    <!--analytics-->
+    <div class="tab-content analytics" [class.hide]="selectedTab !== 'Analytics'">
+      <div class="d-flex">
         <div class="single-box w-30">
-					Creator dropdown
-				</div>
-			</div>
-			<div class="d-flex mt1">
-				<div class="single-box w-100 h-100">
-          fancy info here
-				</div>
-			</div>
-		</div>
+          Analytics
+        </div>
+        <div class="single-box w-35">
+          <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
+            <mat-label>Creator</mat-label>
+            <mat-select formControlName="id">
+              <mat-option *ngFor="let creator of creators" [value]="creator.id">
+                {{creator.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="single-box w-35">
+          <mat-form-field>
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [formGroup]="rangeForm" [rangePicker]="picker">
+              <input matStartDate formControlName="start" placeholder="Start date">
+              <input matEndDate formControlName="end" placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+            <mat-error *ngIf="rangeForm.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+            <mat-error *ngIf="rangeForm.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="single-box w-25">
+          <button type="button" class="btn" (click)="getProductsSold()">
+            <div>Search</div>
+          </button>
+        </div>
+      </div>
+      <div class="d-flex mt1">
+        <div class="single-box w-100 h-100">
+          <div class="row col-md-12">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <mat-card-title>
+                <b>Products Sold</b>
+              </mat-card-title>
+              <mat-card-title>
+                {{productsSold.productsSoldTotal}}
+              </mat-card-title>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+              <mat-card-title>
+                <b>Total</b>
+              </mat-card-title>
+              <mat-card-title class="product-total">
+                ${{productsSold.productsSoldProfit}}
+              </mat-card-title>
+            </div>
+          </div>
+          <table mat-table [dataSource]="productsSold.items" class="example-table" matSort matSortActive="created"
+            matSortDisableClear matSortDirection="desc">
+            <!-- Number Column -->
+            <ng-container matColumnDef="ProductName">
+              <th mat-header-cell *matHeaderCellDef>Products Name</th>
+              <td mat-cell *matCellDef="let row">{{row.itemName}}</td>
+            </ng-container>
+
+            <!-- Title Column -->
+            <ng-container matColumnDef="ProfitShare">
+              <th mat-header-cell *matHeaderCellDef>Profit Share</th>
+              <td mat-cell *matCellDef="let row" class="product-total">${{row.total}}</td>
+            </ng-container>
+
+            <!-- State Column -->
+            <ng-container matColumnDef="Count">
+              <th mat-header-cell *matHeaderCellDef>Count</th>
+              <td mat-cell *matCellDef="let row">{{row.count}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </div>
+    </div>
 
 
 
-		<!--payments-->
-		<div class="tab-content payments" [class.hide] = "selectedTab !== 'Payments'">
-			<div class="d-flex">
-				<div class="single-box w-30">
-					Payments
-				</div>
+    <!--payments-->
+    <div class="tab-content payments" [class.hide]="selectedTab !== 'Payments'">
+      <div class="d-flex">
         <div class="single-box w-30">
-					Creator dropdown
-				</div>
-			</div>
-			<div class="d-flex mt1">
-				<div class="single-box w-20">
-          FTotal amount due
-				</div>
-				<div class="single-box w-20">
-          For each payment display info here for payments
-				</div>
-			</div>
-		</div>
+          Payments
+        </div>
+        <div class="single-box w-35">
+          <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
+            <mat-label>Creator</mat-label>
+            <mat-select formControlName="id">
+              <mat-option *ngFor="let creator of creators" [value]="creator.id">
+                {{creator.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="single-box w-50">
+          <button type="button" class="btn" (click)="getPayments()">
+            <div>Search</div>
+          </button>
+        </div>
+      </div>
+      <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">${{owed?.paymentAmount}}</b>
+                <button [hidden]="!isAdmin" mat-button color="primary" (click)="getProductsSold()">Pay Creator</button>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>Owed</b>
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)">
+        <mat-grid-tile *ngFor="let payment of payments" [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header class="dashboard-card-header">
+              <mat-card-title>
+                <b class="product-total">${{payment.paymentAmount}}</b>
+              </mat-card-title>
+              <mat-card-subtitle class="payment-date">
+                <b>{{payment.formattedDate}}</b>
+              </mat-card-subtitle>
+              <mat-card-subtitle>
+                {{payment.formattedTime}}
+              </mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
 
 
 
-		<!--mediakit-->
-		<div class="tab-content users"  [class.hide] = "selectedTab !== 'Users'">
-			<div class="d-flex">
-				<div class="single-box w-30">
-					Users
-				</div>
-			</div>
-			<div class="d-flex mt1">
-				<div class="single-box w-20">
-          Name
-				</div>
-				<div class="single-box w-16">
-          Role
-				</div>
-				<div class="single-box w-16">
-          Collection
-				</div>
-				<div class="single-box w-16">
-          Active
-				</div>
-				<div class="single-box w-16">
-          edit rates button
-				</div>
-				<div class="single-box w-16">
-          Edit User dropdown
-				</div>
-			</div>
-		</div>
+    <!--mediakit-->
+    <div class="tab-content users" [class.hide]="selectedTab !== 'Users'">
+      <div class="d-flex">
+        <div class="single-box w-30">
+          Users
+        </div>
+      </div>
+      <mat-card>
+        <mat-card-header class="dashboard-card-header">
+          <mat-card-title>
+            Users
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row col-md-12">
+            <div class="col-md-11"></div>
+            <div class="col-md-1">
+              <button mat-button color="primary" (click)="openUserModal()">ADD USER</button>
+            </div>
+          </div>
+
+
+          <div class="container" fxLayout="row" fxLayoutAlign="center none">
+            <div fxFlex="100%" class="text-center no-records animate">
+              <div class="example-container mat-elevation-z8">
+                <div class="example-loading-shade" *ngIf="isLoadingResults">
+                  <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+                </div>
+                <table mat-table [dataSource]="userList" class="example-table" matSort matSortActive="created"
+                  matSortDisableClear matSortDirection="desc">
+                  <!-- Number Column -->
+                  <ng-container matColumnDef="CreatorName">
+                    <th mat-header-cell *matHeaderCellDef>Creator Name</th>
+                    <td mat-cell *matCellDef="let row">{{row.creatorName}}</td>
+                  </ng-container>
+
+                  <!-- Title Column -->
+                  <ng-container matColumnDef="Role">
+                    <th mat-header-cell *matHeaderCellDef>Role</th>
+                    <td mat-cell *matCellDef="let row">{{getRole(row.roleId)}}</td>
+                  </ng-container>
+
+                  <!-- State Column -->
+                  <ng-container matColumnDef="Collection">
+                    <th mat-header-cell *matHeaderCellDef>Collection</th>
+                    <td mat-cell *matCellDef="let row">{{getCollection(row.collectionId)}}</td>
+                  </ng-container>
+
+                  <!-- State Column -->
+                  <ng-container matColumnDef="Active">
+                    <th mat-header-cell *matHeaderCellDef>Active</th>
+                    <td mat-cell *matCellDef="let row"><span style="text-align: left;">{{row.active ? 'True' :
+                        'False'}}</span></td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="Actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let row">
+                      <button mat-button color="accent" (click)="openUserModal(row)">EDIT RATES</button>
+                      <button mat-button color="accent" (click)="openUserModal(row)">EDIT USER</button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
 
 
-		<!--Settings-->
-		<div class="tab-content settings"  [class.hide] = "selectedTab !== 'Settings'">
-			<div class="d-flex">
-				<div class="single-box w-30">
-					Settings
-				</div>
-			</div>
-			<div class="d-flex mt1">
-				<div class="single-box w-100 h-100">
-          logout button
-				</div>
-			</div>
-		</div>
-	</div>
+    <!--Settings-->
+    <div class="tab-content settings" [class.hide]="selectedTab !== 'Settings'">
+      <div class="d-flex">
+        <div class="single-box w-30">
+          Settings
+        </div>
+      </div>
+      <div class="d-flex mt1">
+        <div class="single-box w-100 h-100">
+          <button type="button" class="btn" (click)="logout()">
+            <div>Logout</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>
