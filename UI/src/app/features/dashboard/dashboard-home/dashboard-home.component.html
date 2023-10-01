@@ -26,7 +26,7 @@
       <ul>
         <li [class.active]="selectedTab === 'Analytics'" id="analytics" (click)="toggleTab('Analytics')">Analytics</li>
         <li [class.active]="selectedTab === 'Payments'" id="payments" (click)="toggleTab('Payments')">Payments</li>
-        <li [class.active]="selectedTab === 'Users'" id="users" (click)="toggleTab('Users')" [hidden]="!isAdmin" >Users</li>
+        <!-- <li [class.active]="selectedTab === 'Users'" id="users" (click)="toggleTab('Users')" [hidden]="!isAdmin" >Users</li> -->
         <li [class.active]="selectedTab === 'Settings'" id="settings" (click)="toggleTab('Settings')">Settings</li>
       </ul>
     </div>
@@ -37,8 +37,10 @@
         <div class="single-box w-30">
           Analytics
         </div>
-        <div class="single-box w-35">
-          <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
+      </div>
+      <div class="d-flex mt1" [hidden]="!isAdmin">
+        <div class="single-box w-50">
+          <mat-form-field [formGroup]="creatorForm">
             <mat-label>Creator</mat-label>
             <mat-select formControlName="id">
               <mat-option *ngFor="let creator of creators" [value]="creator.id">
@@ -48,7 +50,7 @@
           </mat-form-field>
         </div>
 
-        <div class="single-box w-35">
+        <div class="single-box w-50">
           <mat-form-field>
             <mat-label>Enter a date range</mat-label>
             <mat-date-range-input [formGroup]="rangeForm" [rangePicker]="picker">
@@ -87,29 +89,36 @@
               </mat-card-title>
             </div>
           </div>
-          <table mat-table [dataSource]="productsSold.items" class="example-table" matSort matSortActive="created"
-            matSortDisableClear matSortDirection="desc">
-            <!-- Number Column -->
-            <ng-container matColumnDef="ProductName">
-              <th mat-header-cell *matHeaderCellDef>Products Name</th>
-              <td mat-cell *matCellDef="let row">{{row.itemName}}</td>
-            </ng-container>
-
-            <!-- Title Column -->
-            <ng-container matColumnDef="ProfitShare">
-              <th mat-header-cell *matHeaderCellDef>Profit Share</th>
-              <td mat-cell *matCellDef="let row" class="product-total">${{row.total}}</td>
-            </ng-container>
-
-            <!-- State Column -->
-            <ng-container matColumnDef="Count">
-              <th mat-header-cell *matHeaderCellDef>Count</th>
-              <td mat-cell *matCellDef="let row">{{row.count}}</td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
+        </div>
+      </div>
+      <div class="d-flex mt1" *ngFor='let product of productsSold.items; first as isFirst'>
+        <div class="single-box w-100">
+          <div class="row col-md-12">
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <mat-card-title *ngIf="isFirst">
+                Product
+              </mat-card-title>
+              <mat-card-title>
+                {{product.itemName}}
+              </mat-card-title>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+            <mat-card-title *ngIf="isFirst">
+              Count
+            </mat-card-title>
+              <mat-card-title>
+                {{product.count}}
+              </mat-card-title>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+            <mat-card-title *ngIf="isFirst">
+              Total
+            </mat-card-title>
+              <mat-card-title class="product-total">
+                ${{product.total}}
+              </mat-card-title>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -122,7 +131,9 @@
         <div class="single-box w-30">
           Payments
         </div>
-        <div class="single-box w-35">
+      </div>
+      <div class="d-flex mt1" [hidden]="!isAdmin">
+        <div class="single-box w-50">
           <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
             <mat-label>Creator</mat-label>
             <mat-select formControlName="id">
@@ -132,8 +143,7 @@
             </mat-select>
           </mat-form-field>
         </div>
-
-        <div class="single-box w-50">
+        <div class="single-box w-25">
           <button type="button" class="btn" (click)="getPayments()">
             <div>Search</div>
           </button>
@@ -144,11 +154,10 @@
           <mat-card class="dashboard-card">
             <mat-card-header class="dashboard-card-header">
               <mat-card-title>
-                <b class="product-total">${{owed?.paymentAmount}}</b>
-                <button [hidden]="!isAdmin" mat-button color="primary" (click)="getProductsSold()">Pay Creator</button>
+                <b class="product-total">${{owed?.paymentAmount}} Owed</b>
               </mat-card-title>
-              <mat-card-subtitle class="payment-date">
-                <b>Owed</b>
+              <mat-card-subtitle>
+                <button [hidden]="!isAdmin" mat-button color="primary" (click)="addPayment()">Pay Creator</button>
               </mat-card-subtitle>
             </mat-card-header>
           </mat-card>

@@ -62,6 +62,7 @@ export class DashboardHomeComponent implements OnInit {
     this.onResizeInit();
     this.getUsersList();
     this.getRolesList();
+    this.getCreators();
     this.getCollectionsList();
     this.toggleTab('Analytics');
   }
@@ -173,7 +174,6 @@ export class DashboardHomeComponent implements OnInit {
     this.selectedTab = tabName;
     switch(tabName){
       case 'Analytics':
-        this.getCreators();
         break;
       case 'Payments':
         break;
@@ -305,7 +305,7 @@ export class DashboardHomeComponent implements OnInit {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
+  // @HostListener('window:resize', ['$event'])
   onResize(event: any) {
 
     if (event.target.innerWidth < 992 && !this.isColumnsMobile) {

@@ -54,3 +54,6 @@ th{
 
   text-align: center!important;
 }
+ .mat-form-field {
+  display: block;
+ }

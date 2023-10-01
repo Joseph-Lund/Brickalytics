@@ -36,7 +36,7 @@ export class DashboardService {
 
   addPayment(userId: number, amount: number){
     var addPaymentsUrl = this.apiUrl + '/Payment';
-    var addPaymentsModel = new Payment(null, userId, new Date(), amount);
+    var addPaymentsModel = new Payment(0, userId, new Date(), amount);
     return this.http.post<Result<ProductsSoldParent>>(addPaymentsUrl, addPaymentsModel);
   }
 }
