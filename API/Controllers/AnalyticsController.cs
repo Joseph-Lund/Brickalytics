@@ -173,7 +173,7 @@ namespace Brickalytics.Controllers
         private async Task<List<Payment>> GetPaymentsCalculations(User user)
         {
             var lastPayment = await _userService.GetLastPaymentAsync(user.Id);
-            var orderProfit = (await GetProductsSold(user, lastPayment, DateTime.Now)).ProductsSoldProfit;
+            var orderProfit = Math.Round((await GetProductsSold(user, lastPayment, DateTime.Now)).ProductsSoldProfit, 2);
 
             var response = await _userService.GetUserPaymentsAsync(user.Id);
             response = response.Where(payment => payment.Id > 6).ToList();

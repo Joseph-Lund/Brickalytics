@@ -38,8 +38,8 @@
           Analytics
         </div>
       </div>
-      <div class="d-flex mt1" [hidden]="!isAdmin">
-        <div class="single-box w-50">
+      <div class="d-flex mt1">
+        <div class="single-box w-50" [hidden]="!isAdmin">
           <mat-form-field [formGroup]="creatorForm">
             <mat-label>Creator</mat-label>
             <mat-select formControlName="id">
@@ -133,8 +133,8 @@
         </div>
       </div>
       <div class="d-flex mt1" [hidden]="!isAdmin">
-        <div class="single-box w-50">
-          <mat-form-field [hidden]="!isAdmin" [formGroup]="creatorForm">
+        <div class="single-box w-50" [hidden]="!isAdmin">
+          <mat-form-field [formGroup]="creatorForm">
             <mat-label>Creator</mat-label>
             <mat-select formControlName="id">
               <mat-option *ngFor="let creator of creators" [value]="creator.id">
@@ -143,7 +143,7 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="single-box w-25">
+        <div class="single-box w-25" [hidden]="!isAdmin">
           <button type="button" class="btn" (click)="getPayments()">
             <div>Search</div>
           </button>
@@ -168,7 +168,7 @@
           <mat-card class="dashboard-card">
             <mat-card-header class="dashboard-card-header">
               <mat-card-title>
-                <b class="product-total">${{payment.paymentAmount}}</b>
+                <b class="product-total">${{payment.paymentAmount  | number : '1.2-2'}}</b>
               </mat-card-title>
               <mat-card-subtitle class="payment-date">
                 <b>{{payment.formattedDate}}</b>
@@ -267,6 +267,57 @@
           Settings
         </div>
       </div>
+      <form [formGroup]="form">
+      <div class="d-flex mt1">
+        <div class="single-box w-50">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Current Password" formControlName="currentPassword" [type]="hideCurrentPassword ? 'password' : 'text'"
+              autocomplete="current-password">
+            <mat-icon matSuffix (click)="hideCurrentPassword = !hideCurrentPassword">
+              {{hideCurrentPassword ? 'visibility' : 'visibility_off'}}
+            </mat-icon>
+
+            <mat-error *ngIf="form.controls['currentPassword'].hasError('required')">
+              Please enter a your current password
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="single-box w-50">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="New Password" formControlName="newPassword" [type]="hideNewPassword ? 'password' : 'text'" autocomplete="new-password">
+            <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword">
+              {{hideNewPassword ? 'visibility' : 'visibility_off'}}
+            </mat-icon>
+
+            <mat-error *ngIf="form.controls['newPassword'].hasError('required')">
+              Please enter a new password
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="d-flex mt1">
+        <div class="single-box w-50">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Confirm New Password" formControlName="newPasswordConfirm" [type]="hideNewPassword ? 'password' : 'text'"
+              autocomplete="new-password">
+            <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword">
+              {{hideNewPassword ? 'visibility' : 'visibility_off'}}
+            </mat-icon>
+
+            <mat-error *ngIf="form.controls['newPasswordConfirm'].hasError('required')">
+              Please confirm your new password
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="single-box w-50">
+          <button [disabled]="form.invalid" type="button" class="btn" (click)="updatePassword()">
+            <div>Change Password</div>
+          </button>
+        </div>
+      </div>
+      </form>
       <div class="d-flex mt1">
         <div class="single-box w-100 h-100">
           <button type="button" class="btn" (click)="logout()">

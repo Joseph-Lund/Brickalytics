@@ -27,11 +27,18 @@ export class DashboardHomeComponent implements OnInit {
   creators: GenericType[] = [];
 
   userList: User[] = [];
+  form!:FormGroup
   owed: Payment | undefined;
   roleList: GenericType[] = [];
   collectionList: GenericType[] = [];
   isColumnsMobile: boolean = false;
   isLoadingResults: boolean = false;
+  hideCurrentPassword: boolean;
+  currentPassword!: string;
+  newPassword!: string;
+  newPasswordConfirm!: string;
+
+  hideNewPassword: boolean;
   payments: Payment[] = [];
   productsSold: ProductsSoldParent = new ProductsSoldParent(0, 0, []);
   isAdmin = false;
@@ -52,6 +59,9 @@ export class DashboardHomeComponent implements OnInit {
     this.creatorForm = new FormGroup({
       id: new FormControl(this.creators![0]?.id ? this.creators![0].id : 0, Validators.required)
     });
+
+    this.hideCurrentPassword = true;
+    this.hideNewPassword = true;
   }
 
   ngOnInit() {
@@ -60,11 +70,29 @@ export class DashboardHomeComponent implements OnInit {
     this.titleService.setTitle('Brickalytics - Dashboard');
 
     this.onResizeInit();
+    if(this.isAdmin){
     this.getUsersList();
     this.getRolesList();
     this.getCreators();
     this.getCollectionsList();
+    }
+
     this.toggleTab('Analytics');
+
+    this.form = new FormGroup({
+      currentPassword: new FormControl('', Validators.required),
+      newPassword: new FormControl('', Validators.required),
+      newPasswordConfirm: new FormControl('', Validators.required),
+    });
+
+    this.form.get('currentPassword')?.valueChanges
+      .subscribe((val: string) => { this.currentPassword = val; });
+
+    this.form.get('newPassword')?.valueChanges
+      .subscribe((val: string) => { this.newPassword = val; });
+
+    this.form.get('newPasswordConfirm')?.valueChanges
+      .subscribe((val: string) => { this.newPasswordConfirm = val; });
   }
 
   getUserById(id: number) {
@@ -332,6 +360,10 @@ export class DashboardHomeComponent implements OnInit {
     if (window.innerWidth < 1200) { this.breakpoint = 3 }
     if (window.innerWidth < 992) { this.breakpoint = 2 }
     if (window.innerWidth < 550) { this.breakpoint = 1 }
+  }
+
+  updatePassword(){
+    this.userService.updateUserPassword(this.authService.getCurrentUser().id, this.newPassword).subscribe(u =>{ });
   }
 
 }

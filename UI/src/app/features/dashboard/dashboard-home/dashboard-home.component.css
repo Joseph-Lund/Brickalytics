@@ -51,9 +51,11 @@ table {
   width: 100%;
 }
 th{
-
   text-align: center!important;
 }
  .mat-form-field {
   display: block;
  }
+.tab-nav ul{
+  margin-bottom: 0px !important;
+}
