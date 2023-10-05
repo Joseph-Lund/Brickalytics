@@ -277,6 +277,8 @@ export class DashboardHomeComponent implements OnInit {
     this.userService.updateUserPassword(user.id!, password).subscribe(res => {
       if (res.code != 200) {
         this.notificationService.openSnackBar(res.message);
+      } else {
+        this.notificationService.openSnackBar("Password Updated!");
       }
     });
   }
