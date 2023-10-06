@@ -73,10 +73,10 @@ export class DashboardHomeComponent implements OnInit {
     if(this.isAdmin){
     this.getUsersList();
     this.getRolesList();
-    this.getCreators();
     this.getCollectionsList();
     }
 
+    this.getCreators();
     this.toggleTab('Analytics');
 
     this.form = new FormGroup({
@@ -365,7 +365,13 @@ export class DashboardHomeComponent implements OnInit {
   }
 
   updatePassword(){
-    this.userService.updateUserPassword(this.authService.getCurrentUser().id, this.newPassword).subscribe(u =>{ });
+    this.userService.updateUserPassword(this.authService.getCurrentUser().id, this.newPassword).subscribe(res =>{
+      if (res.code != 200) {
+        this.notificationService.openSnackBar(res.message);
+      } else {
+        this.notificationService.openSnackBar("Password Updated!");
+      }
+     });
   }
 
 }
