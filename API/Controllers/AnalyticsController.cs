@@ -176,7 +176,7 @@ namespace Brickalytics.Controllers
             var orderProfit = Math.Round((await GetProductsSold(user, lastPayment, DateTime.Now)).ProductsSoldProfit, 2);
 
             var response = await _userService.GetUserPaymentsAsync(user.Id);
-            response = response.Where(payment => payment.Id > 6).ToList();
+            response = response.Where(payment => payment.PaymentAmount > 0).ToList();
             response.Insert(0, new Payment() { Id = 0, UserId = null, PaymentAmount = orderProfit, PaymentDate = DateTime.Now });
             return response;
         }
